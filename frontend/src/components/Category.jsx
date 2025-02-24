@@ -3,7 +3,7 @@ import p_img1 from "../assets/Cream3s.jpg";
 import p_img4 from "../assets/red3.jpg";
 import p_img5 from "../assets/or3.jpg";
 import p_img7 from "../assets/ob3.jpg";
-import p_img8 from "../assets/g3.jpg";
+import p_img8 from "../assets/G3.jpg";
 import Title from "./Title";
 import { useNavigate } from "react-router-dom";
 
