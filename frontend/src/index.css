@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.active hr{
+    display: block;
+}
+
+*{
+    font-family: Outfit;
+}
+
+.prata-regular {
+    font-family: "Prata", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  ::-webkit-scrollbar{
+    display: none;
+  }
+  
+  @media (max-width:640px) {
+    a.active{
+        background-color: black;
+        color: white;
+    }
+  }
+  .sidebar-menu {
+    position: fixed;  /* Ensures it stays in place */
+    top: 0;
+    left: 0; /* Start from left */
+    width: 100vw; /* Cover full width */
+    height: 100vh; /* Cover full height */
+    background: white; /* Ensure it covers the homepage */
+    z-index: 100; /* Above all content */
+    overflow-y: auto; /* Scroll if needed */
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%); /* Start off-screen */
+  }
+  
+  /* When menu is visible */
+  .sidebar-menu.open {
+    transform: translateX(0); /* Slide in from right */
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Dark semi-transparent */
+    z-index: 99; /* Just below the menu */
+    display: none;
+  }
+  
+  /* Show overlay when menu is open */
+  .sidebar-menu.open + .overlay {
+    display: block;
+  }
+  
+  body.no-scroll {
+    overflow: hidden; /* Prevent scrolling */
+    height: 100vh;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+
+
