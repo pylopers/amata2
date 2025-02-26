@@ -98,18 +98,32 @@ const Product = () => {
 
          {/* Product Image Slider */}
          <div className='flex-1'>
-          <Swiper
-            modules={[Navigation, Pagination]}
-            navigation
-            pagination={{ clickable: true }}
-            className="w-full h-auto bg-red"
-          >
-            {productData.image.map((item, index) => (
-              <SwiperSlide key={index}>
-                <img className="w-full h-auto" src={item} alt={`Slide ${index}`} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+         <Swiper
+  navigation={{
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  }}
+  pagination={{
+    clickable: true,
+    el: ".swiper-pagination",
+  }}
+  modules={[Navigation, Pagination]}
+  className="relative"
+>
+  {productData.image.map((item, index) => (
+    <SwiperSlide key={index}>
+      <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
+    </SwiperSlide>
+  ))}
+  
+  {/* Custom Navigation Buttons */}
+  <div className="swiper-button-prev text-red-700 hover:text-red-900"></div>
+  <div className="swiper-button-next text-red-700 hover:text-red-900"></div>
+
+  {/* Custom Pagination */}
+  <div className="swiper-pagination !text-red-700"></div>
+</Swiper>
+
         </div>
 
         {/* -------- Product Info ---------- */}
