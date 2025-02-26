@@ -202,7 +202,7 @@ const Product = () => {
       {/* Content Display Based on Active Tab */}
       <div className='border px-6 py-6 text-sm text-gray-800'>
         {activeTab === 'description' && (
-          <div className='grid grid-cols-2 gap-8'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             {/* Product Information */}
             <div className="overflow-x-auto">
                 <h2 className='text-lg font-medium mb-4'>Product <span className='text-red-700'>Information</span></h2>
