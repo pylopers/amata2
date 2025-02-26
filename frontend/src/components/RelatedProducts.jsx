@@ -28,22 +28,11 @@ const RelatedProducts = ({category,subCategory}) => {
         <Title text1={'RELATED'} text2={"PRODUCTS"} />
       </div>
 
-      <div className="ml-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-    {related.map((item, index) => (
-        <div 
-            key={index} 
-            className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] flex justify-center items-center"
-        >
-            <ProductItem 
-                id={item._id} 
-                name={item.name} 
-                price={item.price} 
-                image={item.image} 
-            />
-        </div>
-    ))}
-</div>
-
+      <div className='ml-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+        {related.map((item,index)=>(
+            <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image}/>
+        ))}
+      </div>
     </div>
   )
 }
