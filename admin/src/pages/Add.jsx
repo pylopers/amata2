@@ -10,6 +10,11 @@ const Add = ({ token }) => {
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
   const [image5, setImage5] = useState(false);
+  const [image6, setImage6] = useState(false);
+  const [image7, setImage7] = useState(false);
+  const [image8, setImage8] = useState(false);
+  const [image9, setImage9] = useState(false);
+  const [image10, setImage10] = useState(false);
 
   // State to store product details
   const [name, setName] = useState('');
@@ -86,6 +91,11 @@ const updateBenefit = (index, value) => {
       image3 && formData.append('image3', image3);
       image4 && formData.append('image4', image4);
       image5 && formData.append('image5', image5);
+      image6 && formData.append('image6', image6);
+      image7 && formData.append('image7', image7);
+      image8 && formData.append('image8', image8);
+      image9 && formData.append('image9', image9);
+      image10 && formData.append('image10', image10);
 
       const response = await axios.post(backendUrl + '/api/product/add', formData, { headers: { token } });
 
@@ -113,6 +123,11 @@ const updateBenefit = (index, value) => {
         setImage3(false);
         setImage4(false);
         setImage5(false);
+        setImage6(false);
+        setImage7(false);
+        setImage8(false);
+        setImage9(false);
+        setImage10(false);
       } else {
         toast.error(response.data.message);
       }
@@ -128,7 +143,7 @@ const updateBenefit = (index, value) => {
       <div>
         <p className="mb-2">Upload Image</p>
         <div className="flex gap-2">
-          {[image1, image2, image3, image4, image5].map((image, index) => (
+          {[image1, image2, image3, image4,image5,image6,image7,image8,image9,image10].map((image, index) => (
             <label key={index} htmlFor={`image${index + 1}`}>
               <img className="w-20" src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
               <input onChange={(e) => eval(`setImage${index + 1}`)(e.target.files[0])} type="file" id={`image${index + 1}`} hidden />
