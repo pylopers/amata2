@@ -102,7 +102,7 @@ const Product = () => {
             modules={[Navigation, Pagination]}
             navigation
             pagination={{ clickable: true }}
-            className="w-full h-auto"
+            className="w-full h-auto bg-red"
           >
             {productData.image.map((item, index) => (
               <SwiperSlide key={index}>
