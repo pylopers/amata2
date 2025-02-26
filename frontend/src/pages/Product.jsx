@@ -118,9 +118,14 @@ const Product = () => {
           </div>
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
-          <button onClick={()=>addToCart(productData._id)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700 hover:bg-red-700'>ADD TO CART</button>
-          <button onClick={() => handleBuyNow(productData._id)} className='ml-4 bg-red-700 text-white px-8 py-3 mt-3 text-sm active:bg-red-800 hover:bg-red-600'>BUY NOW</button>
-          
+          {productData.inStock ? (
+  <>
+    <button onClick={() => addToCart(productData._id)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700 hover:bg-red-700'>ADD TO CART</button>
+    <button onClick={() => handleBuyNow(productData._id)} className='ml-4 bg-red-700 text-white px-8 py-3 mt-3 text-sm active:bg-red-800 hover:bg-red-600'>BUY NOW</button>
+  </>
+) : (
+  <p className="text-red-700 font-semibold text-lg mt-5">Out of Stock</p>
+)}
           {/* Expandable Sections */}
       <div className='mt-10 border-t mr-4'>
         {[
