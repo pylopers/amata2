@@ -27,7 +27,7 @@ const RelatedProducts = ({category,subCategory}) => {
   return (
     <div className=''>
             <div className='text-center text-3xl'>
-                <Title text1={'Related'} text2={'Products'} />
+                <Title text1={'Relate'} text2={'Products'} />
             </div>
 
             {/* Scrollable on Mobile, Grid on Larger Screens */}
