@@ -28,7 +28,7 @@ const ProductItem = ({ id, image, name, price, originalPrice, averageRating, fea
     return (
         <Link onClick={() => scrollTo(0, 0)} className="text-gray-700 cursor-pointer block w-full" to={`/product/${id}`}>
             {/* Product Image */}
-            <div className="overflow-hidden rounded-lg shadow-md">
+            <div className="rounded-lg shadow-md">
                 <img className="hover:scale-105 transition-transform ease-in-out duration-300 w-full h-[250px] object-cover" src={image[0]} alt={name} />
             </div>
 
