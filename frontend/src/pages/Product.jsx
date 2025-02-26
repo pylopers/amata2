@@ -121,7 +121,7 @@ const Product = () => {
   <div className="swiper-button-next text-red-700 hover:text-red-900"></div>
 
   {/* Custom Pagination */}
-  <div className="swiper-pagination !text-red-700"></div>
+  <div className="swiper-pagination text-red-700"></div>
 </Swiper>
 
         </div>
