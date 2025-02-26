@@ -230,7 +230,7 @@ const Product = () => {
 
               {/* Product Description */}
               <div>
-                <h2 className='text-lg font-medium mb-4'>Product Description</h2>
+                <h2 className='text-lg font-medium mb-4'>Product <span className='text-red-700'>Description</span></h2>
                 <p>{productData.description}</p>
               </div>
           </div>
