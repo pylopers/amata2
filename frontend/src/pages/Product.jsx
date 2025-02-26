@@ -108,14 +108,24 @@ const Product = () => {
         {/* -------- Product Info ---------- */}
         <div className='ml-4 flex-1'>
           <h1 className='font-medium text-2xl mt-2'>{productData.name}</h1>
-          <div className=' flex items-center gap-1 mt-2'>
-              <img src={assets.star_icon} alt="" className="w-3 5" />
-              <img src={assets.star_icon} alt="" className="w-3 5" />
-              <img src={assets.star_icon} alt="" className="w-3 5" />
-              <img src={assets.star_icon} alt="" className="w-3 5" />
-              <img src={assets.star_dull_icon} alt="" className="w-3 5" />
-              <p className='pl-2'>({reviews.length} reviews)</p>
-          </div>
+          <div className='flex items-center gap-1 mt-2'>
+  {productData.averageRating === 0 ? (
+    <p className='text-gray-500'>No reviews yet.</p>
+  ) : (
+    <>
+      {[...Array(5)].map((_, index) => (
+        <img 
+          key={index} 
+          src={index < productData.averageRating ? assets.star_icon : assets.star_dull_icon} 
+          alt="star" 
+          className="w-3.5" 
+        />
+      ))}
+      <p className='pl-2'>({reviews.length} reviews)</p>
+    </>
+  )}
+</div>
+
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
           {productData.inStock ? (
