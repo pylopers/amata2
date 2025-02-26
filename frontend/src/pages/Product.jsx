@@ -10,6 +10,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
+import './swiperStyles.css'
 
 const Product = () => {
   const navigate = useNavigate();
@@ -98,18 +99,19 @@ const Product = () => {
 
          {/* Product Image Slider */}
          <div className='flex-1'>
-          <Swiper
-            modules={[Navigation, Pagination]}
-            navigation
-            pagination={{ clickable: true }}
-            className="w-full h-auto text-red-700"
-          >
-            {productData.image.map((item, index) => (
-              <SwiperSlide key={index}>
-                <img className="w-full h-auto" src={item} alt={`Slide ${index}`} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          
+<Swiper
+  navigation
+  pagination={{ clickable: true }}
+  modules={[Navigation, Pagination]}
+  className="custom-swiper"
+>
+  {productData.image.map((item, index) => (
+    <SwiperSlide key={index}>
+      <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
+    </SwiperSlide>
+  ))}
+</Swiper>
         </div>
 
         {/* -------- Product Info ---------- */}

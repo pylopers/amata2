@@ -1,0 +1,15 @@
+/* Change arrow colors */
+.swiper-button-prev,
+.swiper-button-next {
+  color: red !important; /* Make arrows red */
+}
+
+/* Change pagination dot color */
+.swiper-pagination-bullet {
+  background-color: red !important;
+}
+
+/* Active pagination dot */
+.swiper-pagination-bullet-active {
+  background-color: darkred !important;
+}
