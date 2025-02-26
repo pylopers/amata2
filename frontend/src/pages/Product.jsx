@@ -204,26 +204,35 @@ const Product = () => {
         {activeTab === 'description' && (
           <div className='grid grid-cols-2 gap-8'>
             {/* Product Information */}
-            <div>
-              <h2 className='text-lg font-medium mb-4'>Product <span className='text-red-700'>Information</span></h2>
-              <ul className='space-y-2'>
-                <li><strong>Length:</strong> {productData.length}</li>
-                <li><strong>Width:</strong> {productData.width}</li>
-                <li><strong>Height:</strong> {productData.height}</li>
-                <li><strong>Material:</strong> {productData.material}</li>
-                <li><strong>Seating Capacity:</strong> {productData.seatingCapacity}</li>
-                <li><strong>Model:</strong> {productData.model}</li>
-                <li><strong>Assembly Required:</strong> {productData.assemblyRequired ? 'Yes' : 'No'}</li>
-                <li><strong>What's in the box:</strong> {productData.whatsInTheBox}</li>
-                <li><strong>Color:</strong> {productData.color}</li>
-              </ul>
-            </div>
+            <div className="overflow-x-auto">
+                <h2 className='text-lg font-medium mb-4'>Product <span className='text-red-700'>Information</span></h2>
+                <table className="min-w-full border-collapse border border-gray-300">
+                  <tbody>
+                    {[
+                      { label: 'Length', value: productData.length },
+                      { label: 'Width', value: productData.width },
+                      { label: 'Height', value: productData.height },
+                      { label: 'Material', value: productData.material },
+                      { label: 'Seating Capacity', value: productData.seatingCapacity },
+                      { label: 'Model', value: productData.model },
+                      { label: 'Assembly Required', value: productData.assemblyRequired ? 'Yes' : 'No' },
+                      { label: "What's in the box", value: productData.whatsInTheBox },
+                      { label: 'Color', value: productData.color },
+                    ].map((item, index) => (
+                      <tr key={index} className="border border-gray-300">
+                        <td className="p-3 font-medium bg-gray-100">{item.label}</td>
+                        <td className="p-3">{item.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Product Description */}
-            <div>
-              <h2 className='text-lg font-medium mb-4'>Product Description</h2>
-              <p>{productData.description}</p>
-            </div>
+              {/* Product Description */}
+              <div>
+                <h2 className='text-lg font-medium mb-4'>Product Description</h2>
+                <p>{productData.description}</p>
+              </div>
           </div>
         )}
 
