@@ -31,7 +31,7 @@ const RelatedProducts = ({category,subCategory}) => {
             </div>
 
             {/* Scrollable on Mobile, Grid on Larger Screens */}
-            <div className="md:grid md:grid-cols-4 lg:grid-cols-5 gap-4 flex space-x-4 overflow-x-auto scrollbar-hide px-4">
+            <div className="md:grid md:grid-cols-4 lg:grid-cols-5 gap-2 flex space-x-4 overflow-x-auto scrollbar-hide px-4">
                 {related.map((item, index) => (
                     <div 
                     key={index} 
