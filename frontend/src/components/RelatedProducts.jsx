@@ -35,7 +35,7 @@ const RelatedProducts = ({category,subCategory}) => {
                 {related.map((item, index) => (
                     <div 
                     key={index} 
-                    className="w-[95vw] h-auto min-h-[400px] max-w-[300px] max-h-[450px] md:w-full md:h-auto flex-shrink-0"
+                    className="w-[100vw] h-auto min-h-[400px] max-w-[350px] max-h-[450px] md:w-full md:h-auto flex-shrink-0"
                 >
                         <ProductItem 
                             id={item._id} 
