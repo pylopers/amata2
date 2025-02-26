@@ -1,12 +1,12 @@
 /* Change arrow colors */
 .swiper-button-prev,
 .swiper-button-next {
-  color: red !important; /* Make arrows red */
+  color: darkred !important; /* Make arrows red */
 }
 
 /* Change pagination dot color */
 .swiper-pagination-bullet {
-  background-color: red !important;
+  background-color: darkred !important;
 }
 
 /* Active pagination dot */
