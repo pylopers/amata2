@@ -25,7 +25,7 @@ const ShopByRoom = () => {
       </div>
 
       {/* 🔥 Horizontal Scroll on Mobile, Grid on Larger Screens */}
-      <div className="flex space-x-4 overflow-x-auto scrollbar-hide px-4 sm:grid sm:grid-cols-2 sm:mr-4">
+      <div className="flex space-x-4 overflow-x-auto overflow-y-hidden scrollbar-hide px-4 sm:grid sm:grid-cols-2 sm:mr-4">
         {rooms.map((room) => (
           <div 
             key={room.id} 
