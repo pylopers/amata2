@@ -105,6 +105,7 @@ const Product = () => {
   pagination={{ clickable: true }}
   modules={[Navigation, Pagination]}
   className="custom-swiper"
+  style={{ maxWidth: '500px', margin: 'auto' }}
 >
   {productData.image.map((item, index) => (
     <SwiperSlide key={index}>
