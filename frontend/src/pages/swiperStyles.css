@@ -13,3 +13,10 @@
 .swiper-pagination-bullet-active {
   background-color: darkred !important;
 }
+
+.custom-swiper img {
+  width: 100%;
+  height: auto;
+  object-fit: contain; /* Ensures the image is fully visible */
+  max-height: 500px; /* Adjust this based on your layout */
+}
