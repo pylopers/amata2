@@ -96,7 +96,17 @@ const Product = () => {
     <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100'>
       {/*----------- Product Data-------------- */}
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
-
+      <div className="flex sm:flex-col gap-2">
+    {productData.image.map((item, index) => (
+      <img 
+        key={index} 
+        src={item} 
+        alt={`Thumbnail ${index}`} 
+        className="w-16 h-16 sm:w-20 sm:h-20 object-cover cursor-pointer border border-gray-300 hover:border-red-600"
+        onClick={() => setImage(item)} 
+      />
+    ))}
+  </div>
          {/* Product Image Slider */}
          <div className='flex-1'>
           
