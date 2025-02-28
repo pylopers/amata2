@@ -78,8 +78,14 @@ import scb from './scb.jpg'
 import s4s from './s4s.jpg'
 import tptwo from './sk1.jpg'
 import cream from './Cream3s.jpg'
+import pm1 from './promotion.jpg'
+import pm2 from './promotion2.jpg'
+import pm3 from './promotion3.jpg'
 
 export const assets = {
+    pm1,
+    pm2,
+    pm3,
     logo,
     ottoman,
     cream,
