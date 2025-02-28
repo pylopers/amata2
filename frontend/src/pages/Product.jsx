@@ -167,16 +167,31 @@ const Product = () => {
   )}
 </div>
 <div className='mt-4 flex gap-2'>
-            {colorOptions.map((color) => (
-              <button 
-                key={color} 
-                className={`px-4 py-2 border rounded-md text-sm ${productData.name.includes(color) ? 'bg-gray-900 text-white' : 'bg-gray-200'}`}
-                onClick={() => handleColorChange(color)}
-              >
-                {color}
-              </button>
-            ))}
-          </div>
+  {colorOptions.map((color) => {
+    const colorMap = {
+      Brown: "#8B4513",
+      Yellow: "#FFD700",
+      Orange: "#FFA500",
+      "Ocean Blue": "#0077BE",
+      Red: "#FF0000",
+      Green: "#008000",
+      Cream: "#FFFDD0",
+      Camel: "#C19A6B",
+      "Royal Blue": "#4169E1",
+    };
+    return (
+      <button
+        key={color}
+        className={`w-8 h-8 rounded-full border-2 ${
+          productData.name.includes(color) ? "border-black" : "border-gray-300"
+        }`}
+        style={{ backgroundColor: colorMap[color] }}
+        onClick={() => handleColorChange(color)}
+      ></button>
+    );
+  })}
+</div>
+
 
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
