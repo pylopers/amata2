@@ -15,13 +15,13 @@ const Home = () => {
       <OurPolicy/>
       <TopCategories/>
       <ImageSection 
-        image1={assets.bedroom} 
-        image2={assets.livingroom} 
+        image1={assets.pm1} 
+        image2={assets.pm2} 
       />
       <ShopByRoom/>
       <BestSeller/>
       <ImageSection 
-        image1={assets.bedroom} 
+        image1={assets.pm3} 
         image2={assets.livingroom} 
       />
       <NewsletterBox/>
