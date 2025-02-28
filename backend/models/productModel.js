@@ -32,7 +32,8 @@ const reviewSchema = new mongoose.Schema({
     model: { type: String, required: true },
     assemblyRequired: { type: String, required: true },
     whatsInTheBox: { type: [String], required: true },
-    inStock: { type: Boolean }
+    inStock: { type: Boolean },
+    mainProduct: { type: Boolean, default: false }
 });
 
 const productModel  = mongoose.models.product || mongoose.model("product",productSchema);

@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 // function for add product
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, inStock } = req.body;
+        const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, inStock, mainProduct } = req.body;
         const image1 = req.files.image1 && req.files.image1[0];
         const image2 = req.files.image2 && req.files.image2[0];
         const image3 = req.files.image3 && req.files.image3[0];
@@ -91,7 +91,8 @@ const addProduct = async (req, res) => {
             assemblyRequired,
             whatsInTheBox,
             date: Date.now(),
-            inStock: inStock === "true" ? true : false
+            inStock: inStock === "true" ? true : false,
+            mainProduct: mainProduct === "true" ? true : false
         };
 
         console.log(productData);
@@ -109,7 +110,7 @@ const addProduct = async (req, res) => {
 // function for list product
 const listProducts = async (req, res) => {
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({ mainProduct: true });
         res.json({ success: true, products });
     } catch (error) {
         console.log(error);

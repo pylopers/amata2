@@ -24,6 +24,7 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState('Sofa');
   const [subCategory, setSubCategory] = useState('Hall');
   const [bestseller, setBestseller] = useState(false);
+  const [mainProduct, setMainProduct] = useState(false);
   const [features, setFeatures] = useState(['']);
   const [benefits, setBenefits] = useState(['']);
   const [careInstructions, setCareInstructions] = useState(['']);
@@ -72,6 +73,7 @@ const updateBenefit = (index, value) => {
       formData.append('category', category);
       formData.append('subCategory', subCategory);
       formData.append('bestseller', bestseller);
+      formData.append('mainProduct', mainProduct);
       formData.append('features', JSON.stringify(features));
       formData.append('benefits', JSON.stringify(benefits));
       formData.append('careInstructions', JSON.stringify(careInstructions));
@@ -294,6 +296,11 @@ const updateBenefit = (index, value) => {
       <div className="flex gap-2 mt-2">
         <input onChange={() => setBestseller((prev) => !prev)} checked={bestseller} type="checkbox" id="bestseller" />
         <label className="cursor-pointer" htmlFor="bestseller">Add to Bestseller</label>
+      </div>
+
+      <div className="flex gap-2 mt-2">
+        <input onChange={() => setMainProduct((prev) => !prev)} checked={mainProduct} type="checkbox" id="mainProduct" />
+        <label className="cursor-pointer" htmlFor="mainProduct">Add as Main Product</label>
       </div>
 
       <button type="submit" className="w-28 py-3 mt-4 bg-black text-white">ADD</button>
