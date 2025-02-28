@@ -105,7 +105,19 @@ const Product = () => {
               }
           </div>
           <div className='w-full sm:w-[80%]'>
-              <img className='w-full h-auto' src={image} alt="" />
+          <Swiper
+  navigation
+  pagination={{ clickable: true }}
+  modules={[Navigation, Pagination]}
+  className="custom-swiper"
+  style={{ maxWidth: '600px', margin: 'auto' }}
+>
+  {productData.image.map((item, index) => (
+    <SwiperSlide key={index}>
+      <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
+    </SwiperSlide>
+  ))}
+</Swiper>
           </div>
         </div>
 
