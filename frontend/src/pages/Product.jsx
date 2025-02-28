@@ -67,7 +67,7 @@ const Product = () => {
     const newProduct = products.find(
       (item) =>
         item.name?.startsWith(firstFourWords) &&
-        item.color?.toLowerCase() === color.toLowerCase()
+        item.color?.toUpperrCase() === color.toUpperCase()
     );
   
     if (newProduct) {
