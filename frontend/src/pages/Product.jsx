@@ -49,16 +49,25 @@ const Product = () => {
   };
 
   const handleColorChange = (color) => {
-    if (!productData || !products) return;
+    if (!productData || !productData.title) {
+      console.error("Product data or title is missing", productData);
+      return;
+    }
   
     // Extract the first 4 words from the current product name
     const firstFourWords = productData.title.split(" ").slice(0, 4).join(" ");
   
-    // Find the product with the same first four words & matching color
+    // Ensure `products` array exists
+    if (!products || products.length === 0) {
+      console.error("Products array is empty or missing");
+      return;
+    }
+  
+    // Find the matching product with same first 4 words & color
     const newProduct = products.find(
       (item) =>
-        item.title.startsWith(firstFourWords) &&
-        item.color.toLowerCase() === color.toLowerCase()
+        item.title?.startsWith(firstFourWords) &&
+        item.color?.toLowerCase() === color.toLowerCase()
     );
   
     if (newProduct) {
@@ -67,6 +76,7 @@ const Product = () => {
       alert("No product available in this color.");
     }
   };
+  
   
 
   const handleAddReview = async () => {
