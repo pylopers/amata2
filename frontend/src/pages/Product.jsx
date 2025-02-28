@@ -81,7 +81,8 @@ const Product = () => {
     }
   };
   
-
+  const [activeIndex, setActiveIndex] = useState(0);
+  const swiperRef = useRef(null);
 
   useEffect(() => {
     fetchProductData();
@@ -96,30 +97,39 @@ const Product = () => {
     <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100'>
       {/*----------- Product Data-------------- */}
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
-      <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row'>
-          <div className='flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full'>
-              {
-                productData.image.map((item,index)=>(
-                  <img onClick={()=>setImage(item)} src={item} key={index} className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer' alt="" />
-                ))
-              }
-          </div>
-          <div className='w-full sm:w-[80%]'>
-          <Swiper
-  navigation
-  pagination={{ clickable: true }}
-  modules={[Navigation, Pagination]}
-  className="custom-swiper"
-  style={{ maxWidth: '600px', margin: 'auto' }}
->
-  {productData.image.map((item, index) => (
-    <SwiperSlide key={index}>
-      <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
-    </SwiperSlide>
-  ))}
-</Swiper>
-          </div>
-        </div>
+      <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
+    <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
+      {productData.image.map((item, index) => (
+        <img 
+          onClick={() => {
+            setActiveIndex(index);
+            if (swiperRef.current) swiperRef.current.swiper.slideTo(index);
+          }}
+          src={item} 
+          key={index} 
+          className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer" 
+          alt=""
+        />
+      ))}
+    </div>
+    <div className="w-full sm:w-[80%]">
+      <Swiper
+        navigation
+        pagination={{ clickable: true }}
+        modules={[Navigation, Pagination]}
+        className="custom-swiper"
+        ref={swiperRef}
+        style={{ maxWidth: '600px', margin: 'auto' }}
+        initialSlide={activeIndex}
+      >
+        {productData.image.map((item, index) => (
+          <SwiperSlide key={index}>
+            <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
+  </div>
 
         {/* -------- Product Info ---------- */}
         <div className='ml-4 flex-1'>
