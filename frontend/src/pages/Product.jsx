@@ -96,17 +96,13 @@ const Product = () => {
     <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100'>
       {/*----------- Product Data-------------- */}
       <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row'>
-      <div className="flex sm:flex-col gap-2">
-    {productData.image.map((item, index) => (
-      <img 
-        key={index} 
-        src={item} 
-        alt={`Thumbnail ${index}`} 
-        className="w-16 h-16 sm:w-20 sm:h-20 object-cover cursor-pointer border border-gray-300 hover:border-red-600"
-        onClick={() => setImage(item)} 
-      />
-    ))}
-  </div>
+      <div className='flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full'>
+              {
+                productData.image.map((item,index)=>(
+                  <img onClick={()=>setImage(item)} src={item} key={index} className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer' alt="" />
+                ))
+              }
+          </div>
          {/* Product Image Slider */}
          <div className='flex-1'>
           
@@ -115,7 +111,7 @@ const Product = () => {
   pagination={{ clickable: true }}
   modules={[Navigation, Pagination]}
   className="custom-swiper"
-  style={{ maxWidth: '500px', margin: 'auto' }}
+  style={{ maxWidth: '600px', margin: 'auto' }}
 >
   {productData.image.map((item, index) => (
     <SwiperSlide key={index}>
