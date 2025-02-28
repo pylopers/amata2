@@ -67,7 +67,8 @@ const Product = () => {
   
     // Check color values
     products.forEach((item) => console.log("Product Name:", item.name, "| Color:", item.color));
-  
+    
+    console.log(productData.name.startsWith(firstFourWords))
     // Find the matching product based on first 4 words & color
     const newProduct = products.find(
       (item) =>
