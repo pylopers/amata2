@@ -201,7 +201,7 @@ const Product = () => {
       <button
         key={color}
         className={`w-8 h-8 rounded-full border-2 ${
-          productData.color.includes(color) ? "border-black" : "border-gray-300"
+          productData.color == color ? "border-black" : "border-gray-300"
         }`}
         style={{ backgroundColor: colorMap[color] }}
         onClick={() => handleColorChange(color)}
