@@ -24,6 +24,7 @@ const Product = () => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [activeTab, setActiveTab] = useState('description');
 
+  const colorOptions = ["Brown", "Yellow", "Orange", "Ocean Blue", "Red", "Green", "Cream", "Camel", "Royal Blue"];
   const fetchProductData = async () => {
 
     products.map((item) => {
@@ -36,6 +37,7 @@ const Product = () => {
 
   }
 
+
   const fetchReviews = async () => {
     try {
       const { data } = await axios.get(backendUrl+`/api/product/${productId}/reviews`);
@@ -43,6 +45,19 @@ const Product = () => {
       console.log(data.reviews)
     } catch (error) {
       console.error('Error fetching reviews:', error);
+    }
+  };
+
+  const handleColorChange = (color) => {
+    if (!productData) return;
+    
+    const productPrefix = productData.name.split(" ").slice(0, 4).join(" ");
+    const newProduct = products.find(
+      (p) => p.name.startsWith(productPrefix) && p.name.includes(color)
+    );
+    
+    if (newProduct) {
+      navigate(`/product/${newProduct._id}`);
     }
   };
 
@@ -151,6 +166,17 @@ const Product = () => {
     </>
   )}
 </div>
+<div className='mt-4 flex gap-2'>
+            {colorOptions.map((color) => (
+              <button 
+                key={color} 
+                className={`px-4 py-2 border rounded-md text-sm ${productData.name.includes(color) ? 'bg-gray-900 text-white' : 'bg-gray-200'}`}
+                onClick={() => handleColorChange(color)}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
 
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
