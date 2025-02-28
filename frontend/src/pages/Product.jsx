@@ -49,13 +49,13 @@ const Product = () => {
   };
 
   const handleColorChange = (color) => {
-    if (!productData || !productData.title) {
+    if (!productData || !productData.name) {
       console.error("Product data or title is missing", productData);
       return;
     }
   
     // Extract the first 4 words from the current product name
-    const firstFourWords = productData.title.split(" ").slice(0, 4).join(" ");
+    const firstFourWords = productData.name.split(" ").slice(0, 4).join(" ");
   
     // Ensure `products` array exists
     if (!products || products.length === 0) {
@@ -66,7 +66,7 @@ const Product = () => {
     // Find the matching product with same first 4 words & color
     const newProduct = products.find(
       (item) =>
-        item.title?.startsWith(firstFourWords) &&
+        item.name?.startsWith(firstFourWords) &&
         item.color?.toLowerCase() === color.toLowerCase()
     );
   
