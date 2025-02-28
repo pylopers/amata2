@@ -50,32 +50,40 @@ const Product = () => {
 
   const handleColorChange = (color) => {
     if (!productData || !productData.name) {
-      console.error("Product data or title is missing", productData);
+      console.error("Product data or name is missing", productData);
       return;
     }
   
-    // Extract the first 4 words from the current product name
+    // Get the first 4 words of the product name
     const firstFourWords = productData.name.split(" ").slice(0, 4).join(" ");
+    console.log("Extracted words:", firstFourWords);
   
-    // Ensure `products` array exists
     if (!products || products.length === 0) {
       console.error("Products array is empty or missing");
       return;
     }
   
-    // Find the matching product with same first 4 words & color
+    console.log("Available products:", products);
+  
+    // Check color values
+    products.forEach((item) => console.log("Product Name:", item.name, "| Color:", item.color));
+  
+    // Find the matching product based on first 4 words & color
     const newProduct = products.find(
       (item) =>
-        item.name?.startsWith(firstFourWords) &&
-        item.color?.toUpperrCase() === color.toUpperCase()
+        item.name.startsWith(firstFourWords) &&
+        item.color?.toLowerCase().trim() === color.toLowerCase().trim()
     );
   
     if (newProduct) {
+      console.log("Redirecting to product:", newProduct);
       navigate(`/product/${newProduct._id}`);
     } else {
+      console.error("No matching product found.");
       alert("No product available in this color.");
     }
   };
+  
   
   
 
@@ -201,7 +209,7 @@ const Product = () => {
       <button
         key={color}
         className={`w-8 h-8 rounded-full border-2 ${
-          productData.color == color ? "border-black" : "border-gray-300"
+          productData.name.includes(color) ? "border-black" : "border-gray-300"
         }`}
         style={{ backgroundColor: colorMap[color] }}
         onClick={() => handleColorChange(color)}
