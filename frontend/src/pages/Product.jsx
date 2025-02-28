@@ -49,17 +49,25 @@ const Product = () => {
   };
 
   const handleColorChange = (color) => {
-    if (!productData) return;
-    
-    const productPrefix = productData.name.split(" ").slice(0, 4).join(" ");
+    if (!productData || !products) return;
+  
+    // Extract the first 4 words from the current product name
+    const firstFourWords = productData.title.split(" ").slice(0, 4).join(" ");
+  
+    // Find the product with the same first four words & matching color
     const newProduct = products.find(
-      (p) => p.name.startsWith(productPrefix) && p.name.includes(color)
+      (item) =>
+        item.title.startsWith(firstFourWords) &&
+        item.color.toLowerCase() === color.toLowerCase()
     );
-    
+  
     if (newProduct) {
       navigate(`/product/${newProduct._id}`);
+    } else {
+      alert("No product available in this color.");
     }
   };
+  
 
   const handleAddReview = async () => {
     if (!reviewText.trim()) {
