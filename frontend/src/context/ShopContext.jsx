@@ -81,7 +81,7 @@ const ShopContextProvider = (props) => {
   const getProductsData = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
-      console.log("Products from DB:", products.length);
+      console.log("Products from DB:", allProducts.length);
       if (response.data.success) {
         const all = response.data.products.reverse();
         const main = all.filter((product) => product.mainProduct === true);
