@@ -57,17 +57,24 @@ const Product = () => {
   
     // Get the first 4 words of the product name
     const firstFourWords = productData.name.split(" ").slice(0, 4).join(" ");
+    console.log("Extracted words:", firstFourWords);
   
     if (!allProducts || allProducts.length === 0) {
-      console.error("All products array is empty or missing");
+      console.error("Products array is empty or missing");
       return;
     }
   
-    // Find the matching product in allProducts instead of products
+    console.log("Available products:", allProducts);
+  
+    // Check color values
+    allProducts.forEach((item) => console.log("Product Name:", item.name, "| Color:", item.color));
+    
+    console.log(productData.name.startsWith(firstFourWords))
+    // Find the matching product based on first 4 words & color
     const newProduct = allProducts.find(
       (item) =>
-        item.name.includes(firstFourWords) &&
-        item.color?.toLowerCase().trim() === color.toLowerCase().trim()// Ensuring it is not marked as mainProduct
+        item.name.startsWith(firstFourWords) &&
+        item.color?.toLowerCase().trim() === color.toLowerCase().trim()
     );
   
     if (newProduct) {
