@@ -12,10 +12,11 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import './swiperStyles.css'
 
+
 const Product = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
-  const { backendUrl, products, currency ,addToCart, token } = useContext(ShopContext);
+  const { backendUrl, products, currency ,addToCart, token, allProducts } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('')
   const [reviews, setReviews] = useState([]);
@@ -56,24 +57,17 @@ const Product = () => {
   
     // Get the first 4 words of the product name
     const firstFourWords = productData.name.split(" ").slice(0, 4).join(" ");
-    console.log("Extracted words:", firstFourWords);
   
-    if (!products || products.length === 0) {
-      console.error("Products array is empty or missing");
+    if (!allProducts || allProducts.length === 0) {
+      console.error("All products array is empty or missing");
       return;
     }
   
-    console.log("Available products:", products);
-  
-    // Check color values
-    products.forEach((item) => console.log("Product Name:", item.name, "| Color:", item.color));
-    
-    console.log(productData.name.startsWith(firstFourWords))
-    // Find the matching product based on first 4 words & color
-    const newProduct = products.find(
+    // Find the matching product in allProducts instead of products
+    const newProduct = allProducts.find(
       (item) =>
-        item.name.startsWith(firstFourWords) &&
-        item.color?.toLowerCase().trim() === color.toLowerCase().trim()
+        item.name.includes(firstFourWords) &&
+        item.color?.toLowerCase().trim() === color.toLowerCase().trim()// Ensuring it is not marked as mainProduct
     );
   
     if (newProduct) {
