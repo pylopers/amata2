@@ -26,17 +26,16 @@ const Product = () => {
   const [activeTab, setActiveTab] = useState('description');
 
   const colorOptions = ["Brown", "Yellow", "Orange", "Ocean Blue", "Red", "Green", "Cream", "Camel", "Royal Blue"];
-  const fetchProductData = async () => {
 
-    products.map((item) => {
-      if (item._id === productId) {
-        setProductData(item)
-        setImage(item.image[0])
-        return null;
-      }
-    })
-
+ const fetchProductData = async () => {
+  const item = allProducts.find((item) => item._id === productId);
+  if (item) {
+    setProductData(item);
+    setImage(item.image[0]);
+  } else {
+    console.error("Product not found");
   }
+};
 
 
   const fetchReviews = async () => {
@@ -130,7 +129,7 @@ const Product = () => {
   useEffect(() => {
     fetchProductData();
     fetchReviews();
-  }, [productId,products])
+  }, [productId,allProducts])
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
