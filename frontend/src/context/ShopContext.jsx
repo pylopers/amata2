@@ -81,13 +81,14 @@ const ShopContextProvider = (props) => {
   const getProductsData = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
-      console.log("Products from DB:", allProducts.length);
+      console.log("API Response:", response.data);
+  
       if (response.data.success) {
         const all = response.data.products.reverse();
-        const main = all.filter((product) => product.mainProduct === true);
-
+        console.log("Total Products Fetched:", all.length);
+  
         setAllProducts(all); // ✅ Store all products
-        setProducts(main); // ✅ Store only main products
+        setProducts(all.filter((product) => product.mainProduct === true)); // ✅ Store main products
       } else {
         toast.error(response.data.message);
       }
@@ -96,6 +97,7 @@ const ShopContextProvider = (props) => {
       toast.error(error.message);
     }
   };
+  
 
   // 🛍️ Fetch User's Cart from Backend
   const getUserCart = async (token) => {
