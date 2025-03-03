@@ -12,10 +12,10 @@ const Cart = () => {
 
 
   useEffect(() => {
-    if (products.length > 0) {
+    if (allProducts.length > 0) {
       const tempData = Object.keys(cartItems)
         .map((itemId) => {
-          const product = products.find((product) => product._id === itemId);
+          const product = allProducts.find((product) => product._id === itemId);
           return product && cartItems[itemId] > 0
             ? { ...product, quantity: cartItems[itemId] }
             : null;
@@ -31,7 +31,7 @@ const Cart = () => {
   return (
     <div className='border-t pt-14'>
 
-      <div className=' text-2xl mb-3'>
+      <div className='ml-3 text-2xl mb-3'>
         <Title text1={'YOUR'} text2={'CART'} />
       </div>
 
