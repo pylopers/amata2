@@ -202,19 +202,25 @@ const allOrders = async (req,res) => {
 }
 
 // User Order Data For Forntend
-const userOrders = async (req,res) => {
+const userOrders = async (req, res) => {
     try {
+        console.log("User Orders Request Received:", req.body); // Debugging
+        console.log("Headers:", req.headers);
         
-        const { userId } = req.body
+        const { userId } = req.body;
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID missing" });
+        }
 
-        const orders = await orderModel.find({ userId })
-        res.json({success:true,orders})
+        const orders = await orderModel.find({ userId });
+        res.json({ success: true, orders });
 
     } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
+
 
 // update order status from Admin Panel
 const updateStatus = async (req,res) => {
