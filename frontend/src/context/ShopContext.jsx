@@ -35,21 +35,26 @@ const ShopContextProvider = (props) => {
 
   // 🔄 Update Item Quantity in Cart (Optimized)
   const updateQuantity = async (itemId, quantity) => {
-    if (quantity < 1) return; // Prevents zero or negative quantity
+    if (quantity < 0) return; // Allow zero but prevent negative
 
-    let updatedCart = { ...cartItems, [itemId]: quantity };
+    let updatedCart = { ...cartItems };
+    if (quantity === 0) {
+        delete updatedCart[itemId]; // Remove item from cart
+    } else {
+        updatedCart[itemId] = quantity;
+    }
     setCartItems(updatedCart);
 
     if (token) {
-      try {
-        await axios.post(`${backendUrl}/api/cart/update`, { itemId, quantity }, { headers: { token } });
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to update quantity.");
-        setCartItems(cartItems); // Rollback on failure
-      }
+        try {
+            await axios.post(`${backendUrl}/api/cart/update`, { itemId, quantity }, { headers: { token } });
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to update quantity.");
+            setCartItems(cartItems); // Rollback on failure
+        }
     }
-  };
+};
 
   // 📊 Get Total Items in Cart
   const getCartCount = () => {
