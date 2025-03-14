@@ -6,7 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const PlaceOrder = () => {
-    const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products, allProducts } = useContext(ShopContext);
+    const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, allProducts } = useContext(ShopContext);
     const [savedAddresses, setSavedAddresses] = useState([]);
     const [useSavedAddress, setUseSavedAddress] = useState(false);
     const [saveAddress, setSaveAddress] = useState(false);
@@ -111,41 +111,40 @@ Object.keys(cartItems).forEach(productId => {
 
     const initPay = (order) => {
         const options = {
-          key: process.env.REACT_APP_RAZORPAY_KEY,
-          amount: order.amount,
-          currency: "INR",
-          name: "Your Shop Name",
-          description: "Order Payment",
-          order_id: order.id,
-          handler: async function (response) {
-            try {
-              const verifyRes = await axios.post(`${backendUrl}/api/order/verify`, response, { headers: { token } });
-              if (verifyRes.data.success) {
-                toast.success("Payment successful!");
-                setCartItems({});
-              } else {
-                toast.error("Payment verification failed!");
-              }
-            } catch (error) {
-              toast.error("Payment verification error!");
-            } finally {
-              navigate('/orders'); // 🔹 Always navigate after payment attempt
+            key: process.env.REACT_APP_RAZORPAY_KEY,
+            amount: order.amount,
+            currency: "INR",
+            name: "Your Shop Name",
+            description: "Order Payment",
+            order_id: order.id,
+            handler: async function (response) {
+                try {
+                    const verifyRes = await axios.post(`${backendUrl}/api/order/verify`, response, { headers: { token } });
+                    if (verifyRes.data.success) {
+                        toast.success("Payment successful!");
+                        setCartItems({});
+                        navigate('/orders');
+                    } else {
+                        toast.error("Payment verification failed!");
+                    }
+                } catch (error) {
+                    toast.error("Payment verification error!");
+                }
+            },
+            prefill: {
+                name: `${formData.firstName} ${formData.lastName}`,
+                email: formData.email,
+                contact: formData.phone
+            },
+            theme: {
+                color: "#000000"
             }
-          },
-          prefill: {
-            name: `${formData.firstName} ${formData.lastName}`,
-            email: formData.email,
-            contact: formData.phone,
-          },
-          theme: {
-            color: "#000000"
-          }
         };
-      
+
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
-      };
-      
+    };
+
     return (
         <form onSubmit={(e) => e.preventDefault()} className='ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
             <div className='flex flex-col gap-4 w-full sm:max-w-[720px]'>
