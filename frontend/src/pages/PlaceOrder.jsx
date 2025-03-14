@@ -137,6 +137,7 @@ const PlaceOrder = () => {
                 try {
                     console.log("Verifying payment...");
                     const verifyRes = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+                    console.log("Verification API Response:", verifyRes.data);
 
                     if (verifyRes.data.success) {
                         toast.success("Payment successful!");
@@ -149,6 +150,7 @@ const PlaceOrder = () => {
                         console.log("Navigating to orders...");
                         setTimeout(() => navigate('/orders'), 500);
                     } else {
+                        onsole.error("Payment verification error:",error.response?.data || error.message);
                         toast.error("Payment verification failed!");
                     }
                 } catch (error) {
