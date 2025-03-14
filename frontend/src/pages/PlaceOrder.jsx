@@ -119,11 +119,19 @@ Object.keys(cartItems).forEach(productId => {
             order_id: order.id,
             handler: async function (response) {
                 try {
+                    console.log("Verifying payment...");
                     const verifyRes = await axios.post(`${backendUrl}/api/order/verify`, response, { headers: { token } });
+    
                     if (verifyRes.data.success) {
                         toast.success("Payment successful!");
+                        
+                        // Clear cart & navigate
+                        console.log("Clearing cart...");
                         setCartItems({});
-                        navigate('/orders');
+                        localStorage.removeItem("cartItems"); 
+    
+                        console.log("Navigating to orders...");
+                        setTimeout(() => navigate('/orders'), 500);
                     } else {
                         toast.error("Payment verification failed!");
                     }
@@ -140,10 +148,11 @@ Object.keys(cartItems).forEach(productId => {
                 color: "#000000"
             }
         };
-
+    
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
     };
+    
 
     return (
         <form onSubmit={(e) => e.preventDefault()} className='ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
