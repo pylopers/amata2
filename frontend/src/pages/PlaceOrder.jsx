@@ -31,6 +31,7 @@ const PlaceOrder = () => {
                 const { data } = await axios.get(`${backendUrl}/api/user/saved-addresses`, { headers: { token } });
                 if (data.success) setSavedAddresses(data.savedAddresses);
             } catch (error) {
+                console.error("Error fetching addresses:", error);
                 toast.error("Failed to load saved addresses.");
             }
         };
@@ -69,14 +70,14 @@ const PlaceOrder = () => {
         }
 
         let orderItems = [];
-Object.keys(cartItems).forEach(productId => {
-    if (cartItems[productId] > 0) {
-        const product = allProducts.find(p => p._id === productId);
-        if (product) {
-            orderItems.push({ ...product, quantity: cartItems[productId] });
-        }
-    }
-});
+        Object.keys(cartItems).forEach(productId => {
+            if (cartItems[productId] > 0) {
+                const product = allProducts.find(p => p._id === productId);
+                if (product) {
+                    orderItems.push({ ...product, quantity: cartItems[productId] });
+                }
+            }
+        });
 
         console.log("Cart Items:", cartItems);
 
@@ -94,7 +95,11 @@ Object.keys(cartItems).forEach(productId => {
                 amount: getCartAmount() + delivery_fee
             };
 
+            console.log("Order Data being sent:", orderData);
+
             const { data } = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, { headers: { token } });
+
+            console.log("Response from order API:", data);
 
             if (data.success) {
                 initPay(data.order);
@@ -102,7 +107,7 @@ Object.keys(cartItems).forEach(productId => {
                 toast.error(data.message);
             }
         } catch (error) {
-            console.log(error);
+            console.error("Error placing order:", error.response?.data || error.message);
             toast.error("Failed to place order.");
         } finally {
             setLoading(false);
@@ -110,8 +115,19 @@ Object.keys(cartItems).forEach(productId => {
     };
 
     const initPay = (order) => {
+        if (!window.Razorpay) {
+            toast.error("Razorpay SDK failed to load. Check your internet connection.");
+            return;
+        }
+
+        console.log("Order from API:", order);
+        if (!order || !order.id || !order.amount) {
+            toast.error("Invalid order data received.");
+            return;
+        }
+
         const options = {
-            key: process.env.REACT_APP_RAZORPAY_KEY,
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
             amount: order.amount,
             currency: "INR",
             name: "Your Shop Name",
@@ -120,22 +136,23 @@ Object.keys(cartItems).forEach(productId => {
             handler: async function (response) {
                 try {
                     console.log("Verifying payment...");
-                    const verifyRes = await axios.post(`${backendUrl}/api/order/verify`, response, { headers: { token } });
-    
+                    const verifyRes = await axios.post(`${backendUrl}/api/order/verifyRazorpay`, response, { headers: { token } });
+
                     if (verifyRes.data.success) {
                         toast.success("Payment successful!");
-                        
+
                         // Clear cart & navigate
                         console.log("Clearing cart...");
                         setCartItems({});
-                        localStorage.removeItem("cartItems"); 
-    
+                        localStorage.removeItem("cartItems");
+
                         console.log("Navigating to orders...");
                         setTimeout(() => navigate('/orders'), 500);
                     } else {
                         toast.error("Payment verification failed!");
                     }
                 } catch (error) {
+                    console.error("Payment verification error:", error);
                     toast.error("Payment verification error!");
                 }
             },
@@ -148,11 +165,10 @@ Object.keys(cartItems).forEach(productId => {
                 color: "#000000"
             }
         };
-    
+
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
     };
-    
 
     return (
         <form onSubmit={(e) => e.preventDefault()} className='ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
@@ -198,14 +214,8 @@ Object.keys(cartItems).forEach(productId => {
                         <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded py-1.5 px-10 w-full' type="email" placeholder='Email address' />
                         <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded py-1.5 px-10 w-full' type="text" placeholder='Street' />
                         <input required onChange={onChangeHandler} name='phone' value={formData.phone} className='border border-gray-300 rounded py-1.5 px-10 w-full' type="number" placeholder='Phone' />
-                        <div className="flex gap-2 items-center mt-4">
-                            <input type="checkbox" checked={saveAddress} onChange={() => setSaveAddress(!saveAddress)} />
-                            <label>Save this address for future purchases</label>
-                        </div>
-                    
                     </>
                 )}
-
             </div>
 
             <div className='ml-4 pr-4 mt-8 sm:mr-10'>
