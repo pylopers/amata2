@@ -22,7 +22,7 @@ const Home = () => {
       <BestSeller/>
       <ImageSection 
         image1={assets.pm3} 
-        image2={assets.livingroom} 
+        image2={assets.pm4} 
       />
       <NewsletterBox/>
     </div>

@@ -24,6 +24,9 @@ const Hero = () => {
         <div className="w-screen h-auto">
           <img className="w-full h-auto object-cover" src={assets.hero_img_3} alt="Slide 3" />
         </div>
+        <div className="w-screen h-auto">
+          <img className="w-full h-auto object-cover" src={assets.pm5} alt="Slide 3" />
+        </div>
       </Slider>
     </div>
   );

@@ -81,11 +81,15 @@ import cream from './Cream3s.jpg'
 import pm1 from './promotion.jpg'
 import pm2 from './promotion2.jpg'
 import pm3 from './promotion3.jpg'
+import pm4 from './Living Space.png'
+import pm5 from './Living Space (1).png'
 
 export const assets = {
     pm1,
     pm2,
     pm3,
+    pm4,
+    pm5,
     logo,
     ottoman,
     cream,
