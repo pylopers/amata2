@@ -18,13 +18,13 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
 
   // 🛒 Add to Cart (Optimized)
-  const addToCart = async (itemId) => {
-    let updatedCart = { ...cartItems, [itemId]: (cartItems[itemId] || 0) + 1 };
+  const addToCart = async (itemId, quantity = 1) => {
+    let updatedCart = { ...cartItems, [itemId]: (cartItems[itemId] || 0) + quantity };
     setCartItems(updatedCart);
-
+  
     if (token) {
       try {
-        await axios.post(`${backendUrl}/api/cart/add`, { itemId }, { headers: { token } });
+        await axios.post(`${backendUrl}/api/cart/add`, { itemId, quantity }, { headers: { token } });
       } catch (error) {
         console.error(error);
         toast.error("Failed to update cart.");
@@ -32,6 +32,7 @@ const ShopContextProvider = (props) => {
       }
     }
   };
+  
 
   // 🔄 Update Item Quantity in Cart (Optimized)
   const updateQuantity = async (itemId, quantity) => {
