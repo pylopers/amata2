@@ -24,6 +24,10 @@ const Product = () => {
   const [rating, setRating] = useState(0);
   const [expandedSection, setExpandedSection] = useState(null);
   const [activeTab, setActiveTab] = useState('description');
+  const [quantity, setQuantity] = useState(1);
+
+const handleIncrease = () => setQuantity((prev) => prev + 1);
+const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const colorOptions = ["Brown", "Yellow", "Orange", "Ocean Blue", "Red", "Green", "Cream", "Camel", "Royal Blue"];
 
@@ -110,10 +114,10 @@ const Product = () => {
     }
   };
   
-  const handleBuyNow = async (productId) => {
+  const handleBuyNow = async (productId, quantity) => {
     try {
       // Step 1: Add the product to the cart
-      await addToCart(productId);
+      await addToCart(productId, quantity);
   
       // Step 2: Redirect directly to the place-order page
       navigate(`/place-order`);
@@ -218,14 +222,29 @@ const Product = () => {
     );
   })}
 </div>
-
-
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
           {productData.inStock ? (
   <>
-    <button onClick={() => addToCart(productData._id)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700 hover:bg-red-700'>ADD TO CART</button>
-    <button onClick={() => handleBuyNow(productData._id)} className='ml-4 bg-red-700 text-white px-8 py-3 mt-3 text-sm active:bg-red-800 hover:bg-red-600'>BUY NOW</button>
+    <button onClick={() => addToCart(productData._id, quantity)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700 hover:bg-red-700'>ADD TO CART</button>
+    <button onClick={() => handleBuyNow(productData._id, quantity)} className='ml-4 bg-red-700 text-white px-8 py-3 mt-3 text-sm active:bg-red-800 hover:bg-red-600'>BUY NOW</button>
+            {/* Quantity Selector */}
+    <div className="flex items-center mt-4 border w-fit px-2 py-1 rounded-md">
+      <button 
+        className="text-lg px-2" 
+        onClick={handleDecrease} 
+        disabled={quantity === 1}
+      >
+        -
+      </button>
+      <span className="px-4">{quantity}</span>
+      <button 
+        className="text-lg px-2" 
+        onClick={handleIncrease}
+      >
+        +
+      </button>
+    </div>
   </>
 ) : (
   <p className="text-red-700 font-semibold text-lg mt-5">Out of Stock</p>
