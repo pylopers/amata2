@@ -28,4 +28,22 @@ app.get('/',(req,res)=>{
     res.send("API Working")
 })
 
+app.get("/api/product/:id", async (req, res) => {
+    const { id } = req.params;
+    console.log("Fetching product with ID:", id); // Debugging line
+
+    try {
+        const product = await productModel.findById(id);
+        if (!product) {
+            console.log("Product not found"); // Debugging line
+            return res.status(404).json({ message: "Product not found" });
+        }
+        res.json(product);
+    } catch (error) {
+        console.error("Error fetching product:", error); // Debugging line
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+
 app.listen(port, ()=> console.log('Server started on PORT : '+ port))

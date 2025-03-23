@@ -6,6 +6,7 @@ import userModel from "../models/userModel.js";
 // function for add product
 const addProduct = async (req, res) => {
     try {
+
         const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, inStock, mainProduct } = req.body;
         const image1 = req.files.image1 && req.files.image1[0];
         const image2 = req.files.image2 && req.files.image2[0];
@@ -18,14 +19,24 @@ const addProduct = async (req, res) => {
         const image9 = req.files.image9 && req.files.image9[0];
         const image10 = req.files.image10 && req.files.image10[0];
 
-        const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10].filter((item) => item !== undefined);
-
+        const images = [];
+        for (let i = 1; i <= 10; i++) {
+            if (req.files[`image${i}`]) {
+                images.push(req.files[`image${i}`][0]);
+            }
+        }
+        
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
-                let result = await cloudinary.uploader.upload(item.path, { resource_type: 'image' });
-                return result.secure_url;
+                try {
+                    let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
+                    return result.secure_url;
+                } catch (error) {
+                    console.error("Cloudinary Upload Error:", error);
+                }
             })
         );
+        imagesUrl = imagesUrl.filter((url) => url !== undefined); // Remove failed uploads
 
         let featureList = [];
         if (Array.isArray(features)) {
@@ -207,16 +218,29 @@ const getProductReviews = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
+        console.log("Received update request with body:", req.body); // Debugging log
+
         const { id, name, category, price, inStock } = req.body;
 
         if (!id) {
             return res.status(400).json({ success: false, message: "Product ID is required" });
         }
 
-        const updatedProduct = await productModel.findByIdAndUpdate(id, 
-            { name, category, price, inStock }, 
-            { new: true }
-        );
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            req.body.id,
+            {
+              $set: {
+                name: req.body.name,
+                category: req.body.category,
+                price: req.body.price,
+                inStock: req.body.inStock,
+                image: req.body.image, // Ensure this is being updated
+              },
+            },
+            { new: true } // Ensures MongoDB returns the updated document
+          );
+          console.log("Updated product:", updatedProduct);
+          
 
         if (!updatedProduct) {
             return res.status(404).json({ success: false, message: "Product not found" });
@@ -224,9 +248,10 @@ const updateProduct = async (req, res) => {
 
         res.json({ success: true, message: "Product updated successfully", product: updatedProduct });
     } catch (error) {
-        console.error(error);
+        console.error("Error updating product:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
 
 export { listProducts, addProduct, removeProduct, singleProduct, addProductReview, getProductReviews, updateProduct, listAllProducts };
