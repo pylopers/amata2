@@ -80,6 +80,7 @@ const List = ({ token }) => {
         category: editData.category,
         price: editData.price,
         inStock: editData.inStock,
+        bestseller: editData.bestseller,
         image: updatedImages,
       };
       console.log("Full data being sent:", JSON.stringify(updatedProductData));
@@ -225,6 +226,18 @@ const List = ({ token }) => {
               ) : (
                 <p>{item.inStock ? "✅ In Stock" : "❌ Out of Stock"}</p>
               )}
+              
+              {/* Bestseller */}
+{editData?._id === item._id ? (
+  <select className="border p-1" value={editData.bestseller}
+    onChange={(e) => setEditData({ ...editData, bestseller: e.target.value === "true" })}
+  >
+    <option value="true">Yes</option>
+    <option value="false">No</option>
+  </select>
+) : (
+  <p>{item.bestseller ? "🔥 Bestseller" : "❌ Not a Bestseller"}</p>
+)}
 
               {/* Action Buttons */}
               <div className="flex gap-2">

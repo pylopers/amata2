@@ -218,29 +218,32 @@ const getProductReviews = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        console.log("Received update request with body:", req.body); // Debugging log
+        console.log("Received update request with body:", req.body);
 
-        const { id, name, category, price, inStock } = req.body;
+        const { id, name, category, price, inStock, bestseller, image } = req.body;
 
         if (!id) {
             return res.status(400).json({ success: false, message: "Product ID is required" });
         }
 
+        console.log("Received bestseller value:", bestseller);
+
         const updatedProduct = await productModel.findByIdAndUpdate(
-            req.body.id,
+            id,
             {
-              $set: {
-                name: req.body.name,
-                category: req.body.category,
-                price: req.body.price,
-                inStock: req.body.inStock,
-                image: req.body.image, // Ensure this is being updated
-              },
+                $set: {
+                    name,
+                    category,
+                    price,
+                    inStock: Boolean(inStock),
+                    bestseller: bestseller === true || bestseller === "true",  // ✅ Fix applied
+                    ...(image && { image })
+                },
             },
-            { new: true } // Ensures MongoDB returns the updated document
-          );
-          console.log("Updated product:", updatedProduct);
-          
+            { new: true }
+        );
+
+        console.log("Updated product:", updatedProduct);
 
         if (!updatedProduct) {
             return res.status(404).json({ success: false, message: "Product not found" });
@@ -252,6 +255,8 @@ const updateProduct = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+
 
 
 export { listProducts, addProduct, removeProduct, singleProduct, addProductReview, getProductReviews, updateProduct, listAllProducts };
