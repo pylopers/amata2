@@ -3,9 +3,21 @@ import productModel from "../models/productModel.js";
 import mongoose from "mongoose";
 import userModel from "../models/userModel.js";
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  console.log("Cloudinary Config:", cloudinary.config());  // Optional: Only for testing
+  
+
 // function for add product
 const addProduct = async (req, res) => {
     try {
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ success: false, message: "No images uploaded" });
+        }
 
         const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, inStock, mainProduct } = req.body;
         const image1 = req.files.image1 && req.files.image1[0];
@@ -29,13 +41,16 @@ const addProduct = async (req, res) => {
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
                 try {
-                    let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
-                    return result.secure_url;
+                    if (item && item.path) {
+                        let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
+                        return result.secure_url;
+                    }
                 } catch (error) {
                     console.error("Cloudinary Upload Error:", error);
                 }
             })
         );
+        
         imagesUrl = imagesUrl.filter((url) => url !== undefined); // Remove failed uploads
 
         let featureList = [];
@@ -113,9 +128,10 @@ const addProduct = async (req, res) => {
 
         res.json({ success: true, message: "Product Added" });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        console.error("Error inside addProduct:", error);
+        res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
     }
+    
 };
 
 // function for list product
