@@ -33,6 +33,7 @@ const reviewSchema = new mongoose.Schema({
     assemblyRequired: { type: String, required: true },
     whatsInTheBox: { type: [String], required: true },
     inStock: { type: Boolean },
+    thumbnail: { type: String, required: true },
     mainProduct: { type: Boolean, default: false }
 });
 
