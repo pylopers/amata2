@@ -11,7 +11,7 @@ const List = ({ token }) => {
 
   const fetchList = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list`);
+      const response = await axios.get(`${backendUrl}/api/product/adminlist`);
       if (response.data.success) {
         setList(response.data.products.reverse());
       } else {
@@ -132,7 +132,7 @@ const List = ({ token }) => {
   const filteredList = list.filter((item) => {
     if (filter === 'all') return true;
     if (filter === 'main') return item.mainProduct === true;
-    if (filter === 'non-main') return item.mainProduct === false;
+    if (filter === 'non-main') return !item.mainProduct;
     return true;
   });
 
