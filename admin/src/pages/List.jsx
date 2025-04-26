@@ -131,8 +131,8 @@ const List = ({ token }) => {
 
   const filteredList = list.filter((item) => {
     if (filter === 'all') return true;
-    if (filter === 'main') return item["mainProduct"] === true;
-    if (filter === 'non-main') return item["mainProduct"] === false;
+    if (filter === 'main') return item.mainProduct === true;
+    if (filter === 'non-main') return item.mainProduct === false;
     return true;
   });
 
@@ -225,14 +225,22 @@ const List = ({ token }) => {
 
             {/* Main Product */}
             {editData?._id === item._id ? (
-              <select className="border p-1" value={editData["mainProduct"]} onChange={(e) => setEditData({...editData, ["mainProduct"]: e.target.value === "true"})}>
+              <select className="border p-1" value={editData.mainProduct} onChange={(e) => setEditData({...editData, mainProduct: e.target.value === "true"})}>
                 <option value="true">Main</option>
                 <option value="false">Variant</option>
               </select>
             ) : (
-              <p>{item["mainProduct"] ? "🌟 Main" : "🎨 Variant"}</p>
+              <p>{item.mainProduct ? "🌟 Main" : "🎨 Variant"}</p>
             )}
-
+            {/* Bestseller */}
+            {editData?._id === item._id ? (
+              <select className="border p-1" value={editData.bestseller} onChange={(e) => setEditData({...editData, bestseller: e.target.value === "true"})}>
+                <option value="true">Bestseller</option>
+                <option value="false">Normal</option>
+              </select>
+            ) : (
+              <p>{item.bestseller ? "🔥 Bestseller" : "💤 Normal"}</p>
+            )}
             {/* Actions */}
             <div className="flex gap-2">
               {editData?._id === item._id ? (
