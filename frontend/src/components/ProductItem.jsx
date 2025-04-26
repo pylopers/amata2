@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext';
 import { Link } from 'react-router-dom';
 import { FaStar, FaCheckCircle } from "react-icons/fa";
 
-const ProductItem = ({ id, image, name, price, originalPrice, averageRating, features }) => {
+const ProductItem = ({ id,thumbnail, image, name, price, originalPrice, averageRating, features }) => {
     
     const { currency } = useContext(ShopContext);
 
@@ -29,7 +29,11 @@ const ProductItem = ({ id, image, name, price, originalPrice, averageRating, fea
         <Link onClick={() => scrollTo(0, 0)} className="text-gray-700 cursor-pointer block w-full" to={`/product/${id}`}>
             {/* Product Image */}
             <div className="overflow-hidden rounded-lg shadow-md">
-                <img className="hover:scale-105 transition-transform ease-in-out duration-300 w-full h-[196px] object-contain" src={image[0]} alt={name} />
+            <img
+  className="hover:scale-105 transition-transform ease-in-out duration-300 w-full h-[196px] object-contain"
+  src={thumbnail}
+  alt={name}
+/>
             </div>
 
             {/* Product Title */}
