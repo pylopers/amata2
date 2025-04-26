@@ -74,7 +74,7 @@ const List = ({ token }) => {
         price: editData.price,
         inStock: editData.inStock,
         bestseller: editData.bestseller,
-        mainPproduct: editData["mainProduct"], // 🔥 added
+        mainProduct: editData.mainProduct, // 🔥 added
         image: updatedImages,
       };
 
