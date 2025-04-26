@@ -74,7 +74,7 @@ const List = ({ token }) => {
         price: editData.price,
         inStock: editData.inStock,
         bestseller: editData.bestseller,
-        "main-product": editData["main-product"], // 🔥 added
+        mainPproduct: editData["mainProduct"], // 🔥 added
         image: updatedImages,
       };
 
@@ -131,8 +131,8 @@ const List = ({ token }) => {
 
   const filteredList = list.filter((item) => {
     if (filter === 'all') return true;
-    if (filter === 'main') return item["main-product"] === true;
-    if (filter === 'non-main') return item["main-product"] === false;
+    if (filter === 'main') return item["mainProduct"] === true;
+    if (filter === 'non-main') return item["mainProduct"] === false;
     return true;
   });
 
@@ -225,12 +225,12 @@ const List = ({ token }) => {
 
             {/* Main Product */}
             {editData?._id === item._id ? (
-              <select className="border p-1" value={editData["main-product"]} onChange={(e) => setEditData({...editData, ["main-product"]: e.target.value === "true"})}>
+              <select className="border p-1" value={editData["mainProduct"]} onChange={(e) => setEditData({...editData, ["mainProduct"]: e.target.value === "true"})}>
                 <option value="true">Main</option>
                 <option value="false">Variant</option>
               </select>
             ) : (
-              <p>{item["main-product"] ? "🌟 Main" : "🎨 Variant"}</p>
+              <p>{item["mainProduct"] ? "🌟 Main" : "🎨 Variant"}</p>
             )}
 
             {/* Actions */}
