@@ -137,6 +137,7 @@ const Add = ({ token }) => {
           onChange={(e) => setThumbnail(e.target.files[0])} 
           type="file" 
           id="thumbnail" 
+          name="thumbnail"
           hidden 
           required 
         />
