@@ -7,7 +7,7 @@ const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [editData, setEditData] = useState(null);
   const [newImages, setNewImages] = useState([]);
-  const [filter, setFilter] = useState('all'); // 🔥 NEW
+  const [filter, setFilter] = useState('all');
 
   const fetchList = async () => {
     try {
@@ -41,7 +41,7 @@ const List = ({ token }) => {
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "update"); 
+    formData.append("upload_preset", "update");
     try {
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/dcdba3iic/image/upload",
@@ -74,7 +74,7 @@ const List = ({ token }) => {
         price: editData.price,
         inStock: editData.inStock,
         bestseller: editData.bestseller,
-        mainProduct: editData.mainProduct, // 🔥 added
+        mainProduct: editData.mainProduct,
         image: updatedImages,
       };
 
@@ -152,43 +152,56 @@ const List = ({ token }) => {
         </select>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='hidden md:grid grid-cols-[2fr_2fr_2fr_2fr_2fr_2fr_2fr] items-start py-1 px-2 border bg-gray-100 text-sm'>
-          <b>Images</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b>Stock</b>
-          <b>Main</b>
-          <b className='text-start'>Action</b>
-        </div>
+      {/* Table Headers */}
+      <div className='hidden md:grid grid-cols-[150px_2fr_1fr_1fr_1fr_1fr_1fr_150px] items-center py-2 px-2 border bg-gray-100 text-sm font-bold'>
+        <div>Images</div>
+        <div>Name</div>
+        <div>Category</div>
+        <div>Price</div>
+        <div>Stock</div>
+        <div>Main</div>
+        <div>Bestseller</div>
+        <div className='text-center'>Action</div>
+      </div>
 
+      {/* Product Rows */}
+      <div className='flex flex-col gap-2'>
         {filteredList.map((item, index) => (
-          <div className='grid grid-cols-[4fr_3fr_1fr] md:grid-cols-[2fr_2fr_2fr_2fr_2fr_2fr_2fr] items-start gap-2 py-1 px-2 border text-sm' key={index}>
+          <div
+            className='grid grid-cols-[150px_2fr_1fr_1fr_1fr_1fr_1fr_150px] items-center gap-2 py-2 px-2 border text-sm'
+            key={index}
+          >
             {/* Images */}
-            <div className="grid grid-cols-4">
-              {editData?._id === item._id
-                ? editData.image.map((img, i) => (
-                  <div key={i} className="relative w-12">
-                    <img className="w-full" src={img} alt="" />
-                    <button
-                      className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full"
-                      onClick={() => handleRemoveImage(i)}
-                    >
-                      X
-                    </button>
-                  </div>
-                ))
-                : item.image.map((img, i) => (
-                  <div key={i} className="w-12">
-                    <img className="w-full" src={img} alt="" />
-                  </div>
-                ))}
-              {editData?._id === item._id && (
-                <label className="w-12 h-12 flex items-center justify-center border cursor-pointer">
-                  <input type="file" multiple accept="image/*" onChange={handleAddImage} className="hidden" />
-                  +
-                </label>
+            <div className="flex flex-wrap gap-1">
+              {editData?._id === item._id ? (
+                <>
+                  {editData.image.map((img, i) => (
+                    <div key={i} className="relative w-12 h-12">
+                      <img src={img} alt="" className="w-full h-full object-cover rounded" />
+                      <button
+                        className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full"
+                        onClick={() => handleRemoveImage(i)}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-12 h-12 flex items-center justify-center border cursor-pointer">
+                    <input type="file" multiple accept="image/*" onChange={handleAddImage} className="hidden" />
+                    +
+                  </label>
+                </>
+              ) : (
+                <>
+                  {item.image.slice(0, 3).map((img, i) => (
+                    <img key={i} src={img} alt="" className="w-12 h-12 object-cover rounded" />
+                  ))}
+                  {item.image.length > 3 && (
+                    <div className="w-12 h-12 flex items-center justify-center bg-gray-200 text-xs rounded">
+                      +{item.image.length - 3}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -196,7 +209,7 @@ const List = ({ token }) => {
             {editData?._id === item._id ? (
               <input type="text" className="border p-1" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} onKeyDown={handleKeyDown} />
             ) : (
-              <p>{item.name}</p>
+              <p className="truncate">{item.name}</p>
             )}
 
             {/* Category */}
@@ -232,6 +245,7 @@ const List = ({ token }) => {
             ) : (
               <p>{item.mainProduct ? "🌟 Main" : "🎨 Variant"}</p>
             )}
+
             {/* Bestseller */}
             {editData?._id === item._id ? (
               <select className="border p-1" value={editData.bestseller} onChange={(e) => setEditData({...editData, bestseller: e.target.value === "true"})}>
@@ -241,14 +255,15 @@ const List = ({ token }) => {
             ) : (
               <p>{item.bestseller ? "🔥 Bestseller" : "💤 Normal"}</p>
             )}
+
             {/* Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center">
               {editData?._id === item._id ? (
-                <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={updateProduct}>Save</button>
+                <button className="bg-blue-500 text-white px-3 py-1 rounded" onClick={updateProduct}>Save</button>
               ) : (
-                <button className="bg-green-500 text-white px-2 py-1 rounded" onClick={() => setEditData({...item, image: [...item.image]})}>Edit</button>
+                <button className="bg-green-500 text-white px-3 py-1 rounded" onClick={() => setEditData({...item, image: [...item.image]})}>Edit</button>
               )}
-              <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => removeProduct(item._id)}>X</button>
+              <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => removeProduct(item._id)}>X</button>
             </div>
           </div>
         ))}
