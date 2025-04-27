@@ -7,8 +7,7 @@ cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-  console.log("Cloudinary Config:", cloudinary.config());  // Optional: Only for testing
+  });  // Optional: Only for testing
   
 
 // function for add product
@@ -41,10 +40,18 @@ const addProduct = async (req, res) => {
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
                 try {
-                    if (item && item.path) {
-                        let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
-                        return result.secure_url;
+                  if (item && item.path) {
+                    // Upload thumbnail (first image) with transformations
+                    if (item === images[0]) { 
+                      const thumbnailResult = await cloudinary.uploader.upload(item.path, { 
+                        transformation: [{ width: 300, height: 300, crop: "fill" }] 
+                      });
+                      return thumbnailResult.secure_url;
                     }
+                    // Upload other images normally
+                    const result = await cloudinary.uploader.upload(item.path);
+                    return result.secure_url;
+                  }
                 } catch (error) {
                     console.error("Cloudinary Upload Error:", error);
                 }
@@ -52,6 +59,9 @@ const addProduct = async (req, res) => {
         );
         
         imagesUrl = imagesUrl.filter((url) => url !== undefined); // Remove failed uploads
+        const thumbnail = imagesUrl[0];
+        const productImages = imagesUrl.slice(1);
+        
 
         let featureList = [];
         if (Array.isArray(features)) {
@@ -96,6 +106,7 @@ const addProduct = async (req, res) => {
         }
 
         const productData = {
+            thumbnail,
             name,
             description,
             category,
@@ -106,7 +117,7 @@ const addProduct = async (req, res) => {
             benefits: benefitList,
             careInstructions: careInstructionList,
             bestseller: bestseller === "true" ? true : false,
-            image: imagesUrl,
+            image: productImages,
             length,
             width,
             height,
@@ -236,7 +247,7 @@ const updateProduct = async (req, res) => {
     try {
         console.log("Received update request with body:", req.body);
 
-        const { id, name, category, price, inStock, bestseller, image } = req.body;
+        const { id, name, category, price, mainProduct, inStock, bestseller, image } = req.body;
 
         if (!id) {
             return res.status(400).json({ success: false, message: "Product ID is required" });
@@ -252,6 +263,7 @@ const updateProduct = async (req, res) => {
                     category,
                     price,
                     inStock: Boolean(inStock),
+                    mainProduct,
                     bestseller: bestseller === true || bestseller === "true",  // ✅ Fix applied
                     ...(image && { image })
                 },

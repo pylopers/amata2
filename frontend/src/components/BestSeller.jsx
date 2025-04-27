@@ -31,14 +31,17 @@ const BestSeller = () => {
                         <ProductItem 
                             id={item._id} 
                             name={item.name} 
-                            image={item.image} 
+                            thumbnail={item.thumbnail} 
                             price={item.price} 
                             originalPrice={item.originalPrice}
                             averageRating={item.averageRating}
                             features={item.features} 
                         />
+                        
                     </div>
+                    
                 ))}
+                
             </div>
         </div>
     );

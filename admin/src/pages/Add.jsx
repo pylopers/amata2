@@ -142,17 +142,22 @@ const updateBenefit = (index, value) => {
   console.log(careInstructions)
   return (
     <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3">
-      <div>
-        <p className="mb-2">Upload Image</p>
-        <div className="flex gap-2">
-          {[image1, image2, image3, image4,image5,image6,image7,image8,image9,image10].map((image, index) => (
-            <label key={index} htmlFor={`image${index + 1}`}>
-              <img className="w-20" src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
-              <input onChange={(e) => eval(`setImage${index + 1}`)(e.target.files[0])} type="file" id={`image${index + 1}`} hidden />
-            </label>
-          ))}
-        </div>
-      </div>
+<div>
+  <p className="mb-2">Thumbnail (First Image)</p>
+  <label htmlFor="thumbnail">
+    <img className="w-20" src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+    <input onChange={(e) => setImage1(e.target.files[0])} type="file" id="thumbnail" hidden required />
+  </label>
+</div>
+
+<div className="flex gap-2">
+  {[image2, image3, image4, image5, image6, image7, image8, image9, image10].map((image, index) => (
+    <label key={index} htmlFor={`image${index + 2}`}>
+      <img className="w-20" src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
+      <input onChange={(e) => eval(`setImage${index + 2}`)(e.target.files[0])} type="file" id={`image${index + 2}`} hidden />
+    </label>
+  ))}
+</div>
 
       <div className="w-full">
         <p className="mb-2">Product Name</p>
