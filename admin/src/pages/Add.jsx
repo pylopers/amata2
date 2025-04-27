@@ -126,48 +126,22 @@ const Add = ({ token }) => {
 
   return (
     <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3">
-      {/* Thumbnail Upload */}
-      <div>
-        <p className="mb-2">Upload Thumbnail</p>
-        <label htmlFor="thumbnail">
-          <img className="w-24 h-24 object-cover border cursor-pointer" 
-               src={thumbnail ? URL.createObjectURL(thumbnail) : assets.upload_area} alt="" />
-        </label>
-        <input 
-          onChange={(e) => setThumbnail(e.target.files[0])} 
-          type="file" 
-          id="thumbnail" 
-          name="thumbnail"
-          hidden 
-          required 
-        />
-      </div>
+<div>
+  <p className="mb-2">Thumbnail (First Image)</p>
+  <label htmlFor="thumbnail">
+    <img className="w-20" src={!image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+    <input onChange={(e) => setImage1(e.target.files[0])} type="file" id="thumbnail" hidden required />
+  </label>
+</div>
 
-      {/* Multiple Images Upload */}
-      <div>
-        <p className="mb-2">Upload Product Images</p>
-        <div className="flex gap-2 flex-wrap">
-          {images.map((image, index) => (
-            <label key={index} htmlFor={`image${index}`}>
-              <img 
-                className="w-20 h-20 object-cover border cursor-pointer" 
-                src={image ? URL.createObjectURL(image) : assets.upload_area} 
-                alt="" 
-              />
-              <input 
-                onChange={(e) => {
-                  const updatedImages = [...images];
-                  updatedImages[index] = e.target.files[0];
-                  setImages(updatedImages);
-                }} 
-                type="file" 
-                id={`image${index}`} 
-                hidden 
-              />
-            </label>
-          ))}
-        </div>
-      </div>
+<div className="flex gap-2">
+  {[image2, image3, image4, image5, image6, image7, image8, image9, image10].map((image, index) => (
+    <label key={index} htmlFor={`image${index + 2}`}>
+      <img className="w-20" src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
+      <input onChange={(e) => eval(`setImage${index + 2}`)(e.target.files[0])} type="file" id={`image${index + 2}`} hidden />
+    </label>
+  ))}
+</div>
 
       {/* Product Details */}
       <div className="w-full">
