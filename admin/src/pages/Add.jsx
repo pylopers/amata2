@@ -5,9 +5,18 @@ import { backendUrl } from '../App';
 import { toast } from 'react-toastify';
 
 const Add = ({ token }) => {
-  const [images, setImages] = useState(Array(10).fill(false)); // array for 10 images
-  const [thumbnail, setThumbnail] = useState(false);
+  const [image1, setImage1] = useState(false);
+  const [image2, setImage2] = useState(false);
+  const [image3, setImage3] = useState(false);
+  const [image4, setImage4] = useState(false);
+  const [image5, setImage5] = useState(false);
+  const [image6, setImage6] = useState(false);
+  const [image7, setImage7] = useState(false);
+  const [image8, setImage8] = useState(false);
+  const [image9, setImage9] = useState(false);
+  const [image10, setImage10] = useState(false);
 
+  // State to store product details
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -29,35 +38,34 @@ const Add = ({ token }) => {
   const [model, setModel] = useState('');
   const [assemblyRequired, setAssemblyRequired] = useState('');
   const [whatsInTheBox, setWhatsInTheBox] = useState(['']);
+ // Array for multiple features
 
-  const addFeatureField = () => setFeatures([...features, '']);
+  const addFeatureField = () => setFeatures([...features, '']); // Add more feature input fields
   const updateFeature = (index, value) => {
-    const updated = [...features];
-    updated[index] = value;
-    setFeatures(updated);
+    const updatedFeatures = [...features];
+    updatedFeatures[index] = value;
+    setFeatures(updatedFeatures);
   };
 
-  const addBenefitField = () => setBenefits([...benefits, '']);
-  const updateBenefit = (index, value) => {
-    const updated = [...benefits];
-    updated[index] = value;
-    setBenefits(updated);
+const addBenefitField = () => setBenefits([...benefits, '']); // Add more feature input fields
+const updateBenefit = (index, value) => {
+    const updatedBenefits = [...benefits];
+    updatedBenefits[index] = value;
+    setBenefits(updatedBenefits);
   };
 
-  const addCareInstructionField = () => setCareInstructions([...careInstructions, '']);
+  const addCareInstructionField = () => setCareInstructions([...careInstructions, '']); // Add more feature input fields
   const updateCareInstruction = (index, value) => {
-    const updated = [...careInstructions];
-    updated[index] = value;
-    setCareInstructions(updated);
+    const updatedCareInstructions = [...careInstructions];
+    updatedCareInstructions[index] = value;
+    setCareInstructions(updatedCareInstructions);
   };
-
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new FormData();
-      
-      if (thumbnail) formData.append('thumbnail', thumbnail);
+
       formData.append('name', name);
       formData.append('description', description);
       formData.append('price', price);
@@ -78,17 +86,50 @@ const Add = ({ token }) => {
       formData.append('color', color);
       formData.append('model', model);
       formData.append('assemblyRequired', assemblyRequired);
-      formData.append('whatsInTheBox', JSON.stringify(whatsInTheBox));
+      formData.append('whatsInTheBox', JSON.stringify(whatsInTheBox)); // Send features as JSON
 
-      images.forEach((img, index) => {
-        if (img) formData.append(`image${index + 1}`, img);
-      });
+      image1 && formData.append('image1', image1);
+      image2 && formData.append('image2', image2);
+      image3 && formData.append('image3', image3);
+      image4 && formData.append('image4', image4);
+      image5 && formData.append('image5', image5);
+      image6 && formData.append('image6', image6);
+      image7 && formData.append('image7', image7);
+      image8 && formData.append('image8', image8);
+      image9 && formData.append('image9', image9);
+      image10 && formData.append('image10', image10);
 
-      const response = await axios.post(`${backendUrl}/api/product/add`, formData, { headers: { token } });
+      const response = await axios.post(backendUrl + '/api/product/add', formData, { headers: { token } });
 
       if (response.data.success) {
         toast.success(response.data.message);
-        resetForm();
+        setName('');
+        setDescription('');
+        setPrice('');
+        setOriginalPrice('');
+        setFeatures(['']);
+        setBenefits(['']);
+        setCareInstructions(['']);
+        setDate('');
+        setLength('');
+        setWidth('');
+        setHeight('');
+        setMaterial('');
+        setSeatingCapacity('');
+        setColor('');
+        setModel('');
+        setAssemblyRequired('');
+        setWhatsInTheBox(['']);
+        setImage1(false);
+        setImage2(false);
+        setImage3(false);
+        setImage4(false);
+        setImage5(false);
+        setImage6(false);
+        setImage7(false);
+        setImage8(false);
+        setImage9(false);
+        setImage10(false);
       } else {
         toast.error(response.data.message);
       }
@@ -98,32 +139,7 @@ const Add = ({ token }) => {
     }
   };
 
-  const resetForm = () => {
-    setThumbnail(false);
-    setImages(Array(10).fill(false));
-    setName('');
-    setDescription('');
-    setPrice('');
-    setOriginalPrice('');
-    setCategory('Sofa');
-    setSubCategory('Hall');
-    setBestseller(false);
-    setMainProduct(false);
-    setFeatures(['']);
-    setBenefits(['']);
-    setCareInstructions(['']);
-    setDate('');
-    setLength('');
-    setWidth('');
-    setHeight('');
-    setMaterial('');
-    setSeatingCapacity('');
-    setColor('');
-    setModel('');
-    setAssemblyRequired('');
-    setWhatsInTheBox(['']);
-  };
-
+  console.log(careInstructions)
   return (
     <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3">
 <div>
@@ -143,20 +159,16 @@ const Add = ({ token }) => {
   ))}
 </div>
 
-      {/* Product Details */}
       <div className="w-full">
         <p className="mb-2">Product Name</p>
-        <input onChange={(e) => setName(e.target.value)} value={name} 
-               className="w-full max-w-[500px] px-3 py-2" type="text" placeholder="Type here" required />
+        <input onChange={(e) => setName(e.target.value)} value={name} className="w-full max-w-[500px] px-3 py-2" type="text" placeholder="Type here" required />
       </div>
 
       <div className="w-full">
         <p className="mb-2">Product Description</p>
-        <textarea onChange={(e) => setDescription(e.target.value)} value={description} 
-                  className="w-full max-w-[500px] px-3 py-2" placeholder="Write content here" required />
+        <textarea onChange={(e) => setDescription(e.target.value)} value={description} className="w-full max-w-[500px] px-3 py-2" placeholder="Write content here" required />
       </div>
 
-      {/* Features */}
       <div className="w-full">
         <p className="mb-2">Product Features</p>
         {features.map((feature, index) => (
@@ -166,14 +178,13 @@ const Add = ({ token }) => {
             value={feature}
             onChange={(e) => updateFeature(index, e.target.value)}
             className="w-full max-w-[500px] px-3 py-2 mb-2"
-            placeholder="Enter Feature"
+            placeholder="Enter feature (e.g., 'Memory Foam')"
             required
           />
         ))}
-        <button type="button" onClick={addFeatureField} className="text-blue-500">+ Add Another Feature</button>
+        <button type="button" onClick={addFeatureField} className="mt-1 text-blue-500">+ Add Another Feature</button>
       </div>
 
-      {/* Benefits */}
       <div className="w-full">
         <p className="mb-2">Product Benefits</p>
         {benefits.map((benefit, index) => (
@@ -183,35 +194,33 @@ const Add = ({ token }) => {
             value={benefit}
             onChange={(e) => updateBenefit(index, e.target.value)}
             className="w-full max-w-[500px] px-3 py-2 mb-2"
-            placeholder="Enter Benefit"
+            placeholder="Enter Benefit (e.g., 'Memory Foam')"
             required
           />
         ))}
-        <button type="button" onClick={addBenefitField} className="text-blue-500">+ Add Another Benefit</button>
+        <button type="button" onClick={addBenefitField} className="mt-1 text-blue-500">+ Add Another Benefit</button>
       </div>
 
-      {/* Care Instructions */}
       <div className="w-full">
-        <p className="mb-2">Product Care Instructions</p>
-        {careInstructions.map((instruction, index) => (
+        <p className="mb-2">Product Care Instruction</p>
+        {careInstructions.map((careInstruction, index) => (
           <input
             key={index}
             type="text"
-            value={instruction}
+            value={careInstruction}
             onChange={(e) => updateCareInstruction(index, e.target.value)}
             className="w-full max-w-[500px] px-3 py-2 mb-2"
-            placeholder="Enter Care Instruction"
+            placeholder="Enter CareIntruction (e.g., 'Memory Foam')"
             required
           />
         ))}
-        <button type="button" onClick={addCareInstructionField} className="text-blue-500">+ Add Another</button>
+        <button type="button" onClick={addCareInstructionField} className="mt-1 text-blue-500">+ Add Another Benefit</button>
       </div>
 
-      {/* Other Details */}
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
         <div>
-          <p className="mb-2">Category</p>
-          <select onChange={(e) => setCategory(e.target.value)} value={category} className="w-full px-3 py-2 sm:w-[120px]">
+          <p className="mb-2">Product Category</p>
+          <select onChange={(e) => setCategory(e.target.value)} className="w-full px-3 py-2 sm:w-[120px]">
             <option value="Sofa">Sofa</option>
             <option value="Sofabeds">Sofabeds</option>
             <option value="Recliner">Recliner</option>
@@ -222,25 +231,24 @@ const Add = ({ token }) => {
 
         <div>
           <p className="mb-2">Sub Category</p>
-          <select onChange={(e) => setSubCategory(e.target.value)} value={subCategory} className="w-full px-3 py-2 sm:w-[120px]">
+          <select onChange={(e) => setSubCategory(e.target.value)} className="w-full px-3 py-2 sm:w-[120px]">
             <option value="Hall">Hall</option>
             <option value="Bedroom">Bedroom</option>
-            <option value="Living Room">Living Room</option>
+            <option value="Living room">Living Room</option>
           </select>
         </div>
 
         <div>
-          <p className="mb-2">Price</p>
-          <input onChange={(e) => setPrice(e.target.value)} value={price} className="w-full px-3 py-2 sm:w-[120px]" type="number" required />
+          <p className="mb-2">Product Price</p>
+          <input onChange={(e) => setPrice(e.target.value)} value={price} className="w-full px-3 py-2 sm:w-[120px]" type="number" placeholder="25" required />
         </div>
 
         <div>
           <p className="mb-2">Original Price</p>
-          <input onChange={(e) => setOriginalPrice(e.target.value)} value={originalPrice} className="w-full px-3 py-2 sm:w-[120px]" type="number" required />
+          <input onChange={(e) => setOriginalPrice(e.target.value)} value={originalPrice} className="w-full px-3 py-2 sm:w-[120px]" type="number" placeholder="30" required />
         </div>
       </div>
 
-      {/* Sizes */}
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
         <div>
           <p className="mb-2">Length</p>
@@ -256,13 +264,16 @@ const Add = ({ token }) => {
         </div>
       </div>
 
-      {/* Material & other details */}
+      {/* Outer Material, Frame Material in one row */}
       <div className="w-full">
-        <p className="mb-2">Material</p>
-        <input onChange={(e) => setMaterial(e.target.value)} value={material} className="w-full max-w-[500px] px-3 py-2" type="text" required />
+        <div>
+          <p className="mb-2">Material</p>
+          <input onChange={(e) => setMaterial(e.target.value)} value={material} className="w-full px-3 py-2 sm:w-[500px]" type="text" required />
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
+      {/* Remaining fields in one row */}
+      <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-6">
         <div>
           <p className="mb-2">Seating Capacity</p>
           <input onChange={(e) => setSeatingCapacity(e.target.value)} value={seatingCapacity} className="w-full px-3 py-2 sm:w-[120px]" type="number" required />
@@ -281,26 +292,25 @@ const Add = ({ token }) => {
         </div>
       </div>
 
-      {/* Whats in the Box */}
       <div className="w-full">
-        <p className="mb-2">What's in the Box</p>
-        <input onChange={(e) => setWhatsInTheBox([e.target.value])} value={whatsInTheBox} 
-               className="w-full max-w-[500px] px-3 py-2" type="text" required />
-      </div>
-
-      {/* Options */}
-      <div className="flex gap-2 mt-2">
-        <input onChange={() => setBestseller(prev => !prev)} checked={bestseller} type="checkbox" id="bestseller" />
-        <label htmlFor="bestseller" className="cursor-pointer">Add to Bestseller</label>
-      </div>
+          <p className="mb-2">Whats in the Box</p>
+          <input onChange={(e) => setWhatsInTheBox(e.target.value)} value={whatsInTheBox} className="w-full max-w-[500px] px-3 py-2 mb-2" type="text" required />
+        </div>
+      
 
       <div className="flex gap-2 mt-2">
-        <input onChange={() => setMainProduct(prev => !prev)} checked={mainProduct} type="checkbox" id="mainProduct" />
-        <label htmlFor="mainProduct" className="cursor-pointer">Add as Main Product</label>
+        <input onChange={() => setBestseller((prev) => !prev)} checked={bestseller} type="checkbox" id="bestseller" />
+        <label className="cursor-pointer" htmlFor="bestseller">Add to Bestseller</label>
+      </div>
+
+      <div className="flex gap-2 mt-2">
+        <input onChange={() => setMainProduct((prev) => !prev)} checked={mainProduct} type="checkbox" id="mainProduct" />
+        <label className="cursor-pointer" htmlFor="mainProduct">Add as Main Product</label>
       </div>
 
       <button type="submit" className="w-28 py-3 mt-4 bg-black text-white">ADD</button>
     </form>
+    
   );
 };
 
