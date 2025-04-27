@@ -238,7 +238,11 @@ const List = ({ token }) => {
 
             {/* Main Product */}
             {editData?._id === item._id ? (
-              <select className="border p-1" value={editData.mainProduct} onChange={(e) => setEditData({...editData, mainProduct: e.target.value === "true"})}>
+              <select 
+              className="border p-1" 
+              value={editData.mainProduct ? "true" : "false"} 
+              onChange={(e) => setEditData({...editData, mainProduct: e.target.value === "true"})}
+            >
                 <option value="true">Main</option>
                 <option value="false">Variant</option>
               </select>
