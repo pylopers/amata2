@@ -10,8 +10,7 @@ const Footer = () => {
         <div>
             <img src={assets.logo} className='mb-5 w-32' alt="" />
             <p className='w-full md:w-2/3 text-black'>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-            </p>
+            Elevate your living space with AMATA’s factory‑direct modern sofa designs, luxury sectional sofas, and bespoke couches—built on sturdy hardwood frames and upholstered in premium leather, velvet, or performance fabrics. Enjoy fully customizable options from ergonomic recliners and convertible sofa beds to modular sectional sets, all backed by flexible warranties, free design consultations, and fast nationwide delivery. Discover competitive pricing on handcrafted loveseats and custom upholstery services that blend functionality, comfort, and timeless elegance.</p>
         </div>
 
         <div>
@@ -27,7 +26,7 @@ const Footer = () => {
         <div>
             <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
             <ul className='flex flex-col gap-1 text-black'>
-                <li>+1-212-456-7890</li>
+                <li>+91 89289 37345</li>
                 <li>contact@sahilbhaizindabaad.com</li>
             </ul>
         </div>
@@ -36,7 +35,7 @@ const Footer = () => {
 
       <div>
         <hr className="border-gray-600" />
-        <p className='py-5 text-sm text-center text-black'>Copyright 2024 @amata.com - All Right Reserved.</p>
+        <p className='py-5 text-sm text-center text-black'>Copyright 2025 @amata.com - All Right Reserved.</p>
       </div>
 
     </div>
