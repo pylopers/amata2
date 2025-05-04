@@ -14,7 +14,7 @@ const BestSeller = () => {
 
     return (
         <div className='mt-4'>
-            <div className='text-center text-3xl'>
+            <div className='text-center text-3xl mb-10'>
                 <Title text1={'BEST'} text2={'SELLERS'} />
                 <p className='w-3/4 m-auto text-xs sm:text-lg md:text-lg lg:text-xl text-gray-600 font-bold'>
                     Jump into our exciting and fabulous AM<span className="text-red-500">A</span>TA Bestsellers – because dull homes are definitely not our style!
