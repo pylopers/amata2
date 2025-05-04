@@ -1,186 +1,105 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { assets } from '../assets/assets';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShopContext } from '../context/ShopContext';
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import Title from './Title';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
-  const [visible, setVisible] = useState(false);
-  const [sofaExpanded, setSofaExpanded] = useState(false);
-  const { setShowSearch, getCartCount, token, setToken, setCartItems } = useContext(ShopContext);
+const NewsletterBox = () => {
   const navigate = useNavigate();
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken('');
-    setCartItems({});
-    setVisible(false);
-    navigate('/login');
-  };
+  // Helper to style “AMATA” with a red “A”
+  const formatAmata = (text) =>
+    text.replace(/AMATA/g, 'AM<span class="text-red-500">A</span>TA');
 
-  // Disable body scroll when sidebar is open
-  useEffect(() => {
-    document.body.classList.toggle('no-scroll', visible);
-  }, [visible]);
-
-  // Universal click handler for sidebar items
+  // Single function to handle navigation & toggling via URL params
   const handleClick = ({ category, subCategory, capacity }) => {
     const params = new URLSearchParams();
-    if (category)    params.append('category', category);
-    if (subCategory) params.append('subCategory', subCategory);
-    if (capacity)    params.append('capacity', capacity);
-    setVisible(false);
+    if (category)     params.append('category', category);
+    if (subCategory)  params.append('subCategory', subCategory);
+    if (capacity)     params.append('capacity', capacity);
     navigate(`/collection?${params.toString()}`);
   };
 
+  const sections = [
+    {
+      title: 'Bedroom Furniture',
+      args: { category: 'Furniture', subCategory: 'Bedroom' },
+      text: `Transform your bedroom into a serene retreat with AMATA’s meticulously crafted bedroom furniture collection. Featuring robust solid wood bed frames, orthopedic memory foam mattresses, and elegant designer bedside tables, each piece is designed for maximum comfort and durability. Our range also includes upholstered headboards and storage benches, offering both style and functionality. Whether you prefer modern minimalism or classic elegance, AMATA’s bedroom furniture elevates your sleep sanctuary, ensuring restful nights and stylish mornings.`
+    },
+    {
+      title: 'Living Room Furniture',
+      args: { category: 'Furniture', subCategory: 'Livingroom' },
+      text: `Redefine your living space with AMATA’s luxurious living room furniture range. From contemporary sofa sets with high-density foam cushions to sculptural lounge chairs and multifunctional center tables, our designs harmonize comfort and sophistication. Crafted with kiln-dried hardwood frames and upholstered in premium, stain-resistant fabrics, these pieces are built to withstand daily use while maintaining their refined aesthetic. Perfect for gatherings, relaxation, and entertainment, AMATA’s living room furniture creates an inviting atmosphere that reflects your personal style.`
+    },
+    {
+      title: 'Sofa Beds',
+      args: { category: 'Sofabeds' },
+      text: `Optimize your living area with AMATA’s versatile sofa beds, ingeniously engineered for dual-purpose performance. Featuring smooth fold mechanisms, high-resilience foam cores, and sumptuous suede velvet upholstery, these convertible sofas transition seamlessly from elegant seating to a plush guest bed. Ideal for apartments and home offices doubling as guest rooms, AMATA sofa beds maximize space without compromising on comfort or design. Delight your visitors with a cozy night’s sleep and elevate your home’s versatility.`
+    },
+    {
+      title: '3 Seater Sofa',
+      args: { category: 'Sofa', capacity: '3' },
+      text: `Experience spacious comfort with the AMATA 3-seater sofa, designed for modern living rooms and open-plan spaces. Its breathable fabric upholstery and plush cushioning provide a perfect balance of support and softness, while the solid wood frame ensures long-lasting stability. The sofa arrives preassembled except for the simple foot attachments, saving you time and effort. Available in a curated palette of contemporary hues, this sofa effortlessly complements any décor and becomes the centerpiece of your home’s social hub.`
+    },
+    {
+      title: '4 Seater Sofa',
+      args: { category: 'Sofa', capacity: '4' },
+      text: `Indulge in family-sized luxury with the AMATA 4-seater sofa, crafted to accommodate larger gatherings and spacious interiors. With extra-deep seats, reinforced armrests, and premium-density foam, this sofa delivers unmatched comfort for movie nights, board games, or leisurely lounging. Preassembled for your convenience and offered in a selection of elegant fabrics, the 4-seater sofa is the epitome of style meeting practicality. Its generous proportions and refined craftsmanship make it an essential addition to expansive living rooms.`
+    },
+    {
+      title: '2 Seater Ottoman',
+      args: { category: 'Furniture', capacity: '2' },
+      text: `Enhance your home with the multifunctional AMATA 2-seater ottoman, featuring a chic button-tufted design and a spacious, hidden storage compartment. Upholstered in durable, easy-to-clean fabric and supported by a sturdy wooden base, this ottoman serves as additional seating, a footrest, or a discreet repository for blankets, magazines, and more. Its compact yet generous footprint makes it perfect for entryways, bedrooms, or living rooms, adding a touch of sophistication while keeping clutter at bay.`
+    }
+  ];
+
   return (
-    <nav className='bg-white flex items-center justify-between py-5 px-10 sm:px-16 lg:px-24 font-medium'>
-      {/* Logo */}
-      <Link to='/'><img src={assets.logo} className='w-36' alt='Logo' /></Link>
-
-      {/* Desktop nav links */}
-      <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-        <NavLink to='/' className='flex flex-col items-center gap-1'>
-          <p>HOME</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-          <p>COLLECTION</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/about' className='flex flex-col items-center gap-1'>
-          <p>ABOUT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-          <p>CONTACT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-      </ul>
-
-      {/* Icons & Mobile menu button */}
-      <div className='flex items-center gap-6'>
-        <img
-          onClick={() => { setShowSearch(true); navigate('/collection'); }}
-          src={assets.search_icon}
-          className='w-5 cursor-pointer'
-          alt='Search'
+    <div className="bg-white text-gray-800 px-6 py-8">
+      {/* SEO meta tags */}
+      <Helmet>
+        <title>Shop Premium Sofas & Furniture Online | AMATA Living Space</title>
+        <meta
+          name="description"
+          content="Discover AMATA’s premium handmade sofas and home furniture for modern Indian households. Luxury designs, factory-direct pricing, and fast nationwide delivery."
         />
+      </Helmet>
 
-        <div className='relative group'>
-          <img
-            onClick={() => token ? null : navigate('/login')}
-            src={assets.profile_icon}
-            className='w-5 cursor-pointer'
-            alt='Profile'
+      {/* Main Promotion */}
+      <section aria-labelledby="shop-heading" className="mb-8">
+        <h1 id="shop-heading" className="text-2xl font-bold mb-4">
+          Shop{' '}
+          <span
+            dangerouslySetInnerHTML={{ __html: formatAmata('AMATA Living Space Online') }}
           />
-          {token && (
-            <div className='group-hover:block hidden absolute right-0 pt-4 z-50'>
-              <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded'>
-                <p className='cursor-pointer hover:text-black'>My Profile</p>
-                <p onClick={() => navigate('/orders')} className='cursor-pointer hover:text-black'>Orders</p>
-                <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
-              </div>
-            </div>
-          )}
-        </div>
+        </h1>
+        <p className="text-gray-600 mb-6">
+          Discover AMATA’s premium handmade sofas and home furniture, crafted for modern living
+          spaces. Our top-rated furniture collections—spanning luxury fabric sofas, wooden bed
+          frames, and space-saving ottomans—combine comfort with contemporary style. Whether you’re
+          furnishing a new home or upgrading your interiors, AMATA offers stylish, durable, and
+          affordable pieces perfect for Indian households. Start your home makeover with
+          factory-direct prices and nationwide delivery.
+        </p>
+      </section>
 
-        <Link to='/cart' className='relative'>
-          <img src={assets.cart_icon} className='w-5' alt='Cart' />
-          <span className='absolute -right-1 -bottom-1 w-4 h-4 text-[8px] text-center leading-4 bg-black text-white rounded-full'>
-            {getCartCount()}
-          </span>
-        </Link>
-
-        <img
-          onClick={() => setVisible(true)}
-          src={assets.menu_icon}
-          className='w-5 cursor-pointer sm:hidden'
-          alt='Menu'
-        />
-      </div>
-
-      {/* Sidebar for small screens */}
-      <div
-        className={`fixed top-0 right-0 bottom-0 w-full max-w-xs bg-white z-50 transform transition-transform 
-          ${visible ? 'translate-x-0' : 'translate-x-full'}`}
-      >
-        {/* Back Button */}
-        <div
-          onClick={() => setVisible(false)}
-          className='flex items-center gap-3 p-4 border-b cursor-pointer'
-        >
-          <img src={assets.dropdown_icon} alt='Back' className='h-4 rotate-180' />
-          <span>Back</span>
-        </div>
-
-        <div className='flex flex-col'>
-          {/* Sofa Cum Bed */}
-          <div
-            onClick={() => handleClick({ category: 'Sofabeds' })}
-            className='flex justify-between items-center px-6 py-4 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
+      {/* Newsletter Sections */}
+      <nav aria-label="Product Categories" className="space-y-8">
+        {sections.map((sec, i) => (
+          <article
+            key={i}
+            className="border p-6 rounded-2xl hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => handleClick(sec.args)}
           >
-            <span>SOFA CUM BED</span>
-            <img src={assets.scb} alt='Sofa Cum Bed' className='w-16 h-12 rounded object-cover' />
-          </div>
-
-          {/* Sofa Main Toggle */}
-          <div
-            onClick={() => setSofaExpanded(!sofaExpanded)}
-            className='flex justify-between items-center px-6 py-4 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
-          >
-            <span>SOFA</span>
-            <img src={assets.hero_img} alt='Sofa' className='w-16 h-12 rounded object-cover' />
-          </div>
-
-          {/* Nested Sofa Subcategories */}
-          {sofaExpanded && (
-            <>
-              <div
-                onClick={() => handleClick({ category: 'Sofa', capacity: '3' })}
-                className='flex justify-between items-center px-8 py-3 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
-              >
-                <span>3 SEATER SOFA</span>
-                <img src={assets.tseater} alt='3 Seater' className='w-16 h-12 rounded object-cover' />
-              </div>
-
-              <div
-                onClick={() => handleClick({ category: 'Sofa', capacity: '5+' })}
-                className='flex justify-between items-center px-8 py-3 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
-              >
-                <span>3+2 SEATER SOFA</span>
-                <img src={assets.tptwo} alt='3+2 Seater' className='w-16 h-12 rounded object-cover' />
-              </div>
-
-              <div
-                onClick={() => handleClick({ category: 'Sofa', capacity: '4' })}
-                className='flex justify-between items-center px-8 py-3 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
-              >
-                <span>4 SEATER SOFA</span>
-                <img src={assets.s4s} alt='4 Seater' className='w-16 h-12 rounded object-cover' />
-              </div>
-            </>
-          )}
-
-          {/* Ottoman */}
-          <div
-            onClick={() => handleClick({ category: 'Furniture', subCategory: 'Ottoman', capacity: '2' })}
-            className='flex justify-between items-center px-6 py-4 border-b cursor-pointer text-gray-700 hover:bg-gray-100'
-          >
-            <span>OTTOMAN</span>
-            <img src={assets.ottoman} alt='Ottoman' className='w-16 h-12 rounded object-cover' />
-          </div>
-        </div>
-      </div>
-
-      {/* Overlay to close sidebar */}
-      {visible && (
-        <div
-          className='fixed inset-0 bg-black opacity-50 z-40'
-          onClick={() => setVisible(false)}
-        />
-      )}
-    </nav>
+            <h2 className="text-2xl font-semibold mb-4">
+              <span
+                dangerouslySetInnerHTML={{ __html: formatAmata(`AMATA ${sec.title}`) }}
+              />
+            </h2>
+            <p className="text-gray-700 leading-relaxed">{sec.text}</p>
+          </article>
+        ))}
+      </nav>
+    </div>
   );
 };
 
-export default Navbar;
+export default NewsletterBox;
