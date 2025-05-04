@@ -7,43 +7,50 @@ import { useLocation } from 'react-router-dom';
 
 const Collection = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const initialCategory    = queryParams.get("category");
-  const initialSubCategory = queryParams.get("subCategory");
-  const initialCapacity    = queryParams.getAll("capacity");
-
   const { products, search, showSearch } = useContext(ShopContext);
-  const [showFilter, setShowFilter]       = useState(false);
+
+  const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
-  const [category, setCategory]           = useState(initialCategory ? [initialCategory] : []);
-  const [subCategory, setSubCategory]     = useState(initialSubCategory ? [initialSubCategory] : []);
-  const [capacity, setCapacity]           = useState(initialCapacity || []);
-  const [sortType, setSortType]           = useState('relevant');
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
+  const [capacity, setCapacity] = useState([]);
+  const [sortType, setSortType] = useState('relevant');
+
+  // Sync filters with URL query params on location change
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam    = params.get('category');
+    const subCategoryParam = params.get('subCategory');
+    const capacityParams   = params.getAll('capacity');
+
+    setCategory(categoryParam ? [categoryParam] : []);
+    setSubCategory(subCategoryParam ? [subCategoryParam] : []);
+    setCapacity(capacityParams);
+  }, [location.search]);
 
   // Toggle handlers
   const toggleCategory = e => {
     const val = e.target.value;
-    setCategory(prev => prev.includes(val)
-      ? prev.filter(i => i !== val)
-      : [...prev, val]
-    );
-  };
-  const toggleSubCategory = e => {
-    const val = e.target.value;
-    setSubCategory(prev => prev.includes(val)
-      ? prev.filter(i => i !== val)
-      : [...prev, val]
-    );
-  };
-  const toggleCapacity = e => {
-    const val = e.target.value;
-    setCapacity(prev => prev.includes(val)
-      ? prev.filter(i => i !== val)
-      : [...prev, val]
+    setCategory(prev =>
+      prev.includes(val) ? prev.filter(i => i !== val) : [...prev, val]
     );
   };
 
-  // Apply all filters
+  const toggleSubCategory = e => {
+    const val = e.target.value;
+    setSubCategory(prev =>
+      prev.includes(val) ? prev.filter(i => i !== val) : [...prev, val]
+    );
+  };
+
+  const toggleCapacity = e => {
+    const val = e.target.value;
+    setCapacity(prev =>
+      prev.includes(val) ? prev.filter(i => i !== val) : [...prev, val]
+    );
+  };
+
+  // Filter logic
   const applyFilter = () => {
     let result = [...products];
 
@@ -53,44 +60,29 @@ const Collection = () => {
       );
     }
     if (category.length) {
-      result = result.filter(item =>
-        category.includes(item.category)
-      );
+      result = result.filter(item => category.includes(item.category));
     }
     if (subCategory.length) {
-      result = result.filter(item =>
-        subCategory.includes(item.subCategory)
-      );
+      result = result.filter(item => subCategory.includes(item.subCategory));
     }
-    // Only filter by seatingCapacity if "Sofa" is selected
     if (category.includes('Sofa') && capacity.length) {
-      result = result.filter(item =>
-        capacity.includes(String(item.seatingCapacity))
-      );
+      result = result.filter(item => capacity.includes(String(item.seatingCapacity)));
     }
 
     setFilterProducts(result);
   };
 
-  // Sort filtered products
+  // Sort logic
   const sortProducts = () => {
     let sorted = [...filterProducts];
-    if (sortType === 'low-high')      sorted.sort((a, b) => a.price - b.price);
+    if (sortType === 'low-high') sorted.sort((a, b) => a.price - b.price);
     else if (sortType === 'high-low') sorted.sort((a, b) => b.price - a.price);
-    // else 'relevant' leaves the order as-is after filtering
     setFilterProducts(sorted);
   };
 
-  // Effects: filter on criteria change, sort on sortType change
+  // Effects to re-run filter/sort
   useEffect(applyFilter, [category, subCategory, search, showSearch, products, capacity]);
   useEffect(sortProducts, [sortType]);
-
-  // Auto-toggle filters from URL params on mount
-  useEffect(() => {
-    if (initialCategory)    setCategory([initialCategory]);
-    if (initialSubCategory) setSubCategory([initialSubCategory]);
-    if (initialCapacity.length) setCapacity(initialCapacity);
-  }, []); // run once
 
   return (
     <div className="px-6 flex flex-col sm:flex-row gap-6 pt-10 border-t">

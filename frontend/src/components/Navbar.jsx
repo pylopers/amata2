@@ -71,58 +71,109 @@ const Navbar = () => {
             {/* Sidebar menu for small screens */}
             
 
-            <div className={`fixed top-0 right-0 bottom-0 w-[100%] max-w-[600px] bg-white transition-transform transform ${visible ? 'translate-x-0' : 'translate-x-full'} z-50`}>
-            <div className='flex flex-col text-gray-600 font-bold'>
-                <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
-                    <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="" />
-                    <p>Back</p>
-                </div>
+            <div
+        className={`
+          fixed top-0 right-0 bottom-0 w-full max-w-[300px]
+          bg-white transition-transform transform
+          ${visible ? 'translate-x-0' : 'translate-x-full'} z-50
+        `}
+      >
+        <div className="flex flex-col h-full">
+          {/* Close button */}
+          <div
+            onClick={() => setVisible(false)}
+            className="flex items-center gap-2 p-4 cursor-pointer border-b"
+          >
+            <img className="h-4 rotate-180" src={assets.dropdown_icon} alt="Close" />
+            <span>Back</span>
+          </div>
 
-                {/* Sofa - Expandable Category */}
-                <NavLink onClick={() => setVisible(false)} to='/sofabeds' className='flex justify-between items-center px-6 py-4 border border-gray-200'>
-                    <p className='text-gray-700'>SOFA CUM BED</p>
-                    <img src={assets.scb} className='w-16 h-12 object-cover rounded' alt="OTTOMAN" />
-                    
-                </NavLink>
-                <div onClick={() => setSofaExpanded(!sofaExpanded)} className='flex justify-between items-center px-6 py-4 border border-gray-200 cursor-pointer'>
-                    <p className='text-gray-700'>SOFA</p>
-                    <img src={assets.hero_img} className='w-16 h-12 object-cover rounded' alt="SOFA" />
-                </div>
+          {/* Sofa Cum Bed */}
+          <NavLink
+            to="/collection?category=Sofabeds"
+            className={({ isActive }) =>
+              `flex items-center justify-between px-6 py-4 border-b cursor-pointer
+               ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
+            }
+            onClick={() => setVisible(false)}
+          >
+            <span>SOFA CUM BED</span>
+            <img src={assets.scb} className="w-16 h-12 object-cover rounded" alt="Sofa Cum Bed" />
+          </NavLink>
 
-                {/* Nested Sofa Subcategories (Expandable) */}
-                {sofaExpanded && (
-                    <>
-                        <NavLink onClick={() => setVisible(false)} to='/sofas' className='flex justify-between items-center px-8 py-3 border border-gray-200'>
-                            <p className='text-gray-700'>3 SEATER SOFA</p>
-                            <img src={assets.tseater} className='w-16 h-12 object-cover rounded' alt="3 SEATER" />
-                        </NavLink>
+          {/* Sofa main toggle */}
+          <div
+            onClick={() => setSofaExpanded(!sofaExpanded)}
+            className="flex items-center justify-between px-6 py-4 border-b cursor-pointer text-gray-700"
+          >
+            <span>SOFA</span>
+            <img src={assets.hero_img} className="w-16 h-12 object-cover rounded" alt="Sofa" />
+          </div>
 
-                        <NavLink onClick={() => setVisible(false)} to='/beds' className='flex justify-between items-center px-8 py-3 border border-gray-200'>
-                            <p className='text-gray-700'>3+2 SEATER SOFA</p>
-                            <img src={assets.tptwo} className='w-16 h-12 object-cover rounded' alt="3+2 SEATER" />
-                        </NavLink>
-
-                        <NavLink onClick={() => setVisible(false)} to='/recliners' className='flex justify-between items-center px-8 py-3 border border-gray-200'>
-                            <p className='text-gray-700'>4 SEATER SOFA</p>
-                            <img src={assets.s4s} className='w-16 h-12 object-cover rounded' alt="4 SEATER" />
-                        </NavLink>
-                    </>
-                )}
-
-                {/* Other Categories */}
-                
-                <NavLink onClick={() => setVisible(false)} to='/ottoman' className='flex justify-between items-center px-6 py-4 border border-gray-200'>
-                    <p className='text-gray-700'>OTTOMAN</p>
-                    <img src={assets.ottoman} className='w-16 h-12 object-cover rounded' alt="OTTOMAN" />
-                    
-                </NavLink>
+          {/* Nested Sofa Subcategories */}
+          {sofaExpanded && (
+            <div className="flex flex-col">
+              <NavLink
+                to="/collection?category=Sofa&capacity=3"
+                className={({ isActive }) =>
+                  `flex items-center justify-between px-8 py-3 border-b cursor-pointer
+                   ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
+                }
+                onClick={() => setVisible(false)}
+              >
+                <span>3 SEATER SOFA</span>
+                <img src={assets.tseater} className="w-16 h-12 object-cover rounded" alt="3 Seater" />
+              </NavLink>
+              <NavLink
+                to={`/collection?category=Sofa&capacity=${encodeURIComponent('5+')}`}
+                className={({ isActive }) =>
+                  `flex items-center justify-between px-8 py-3 border-b cursor-pointer
+                   ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
+                }
+                onClick={() => setVisible(false)}
+              >
+                <span>3+2 SEATER SOFA</span>
+                <img src={assets.tptwo} className="w-16 h-12 object-cover rounded" alt="3+2 Seater" />
+              </NavLink>
+              <NavLink
+                to="/collection?category=Sofa&capacity=4"
+                className={({ isActive }) =>
+                  `flex items-center justify-between px-8 py-3 border-b cursor-pointer
+                   ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
+                }
+                onClick={() => setVisible(false)}
+              >
+                <span>4 SEATER SOFA</span>
+                <img src={assets.s4s} className="w-16 h-12 object-cover rounded" alt="4 Seater" />
+              </NavLink>
             </div>
-        </div>
+          )}
 
+          {/* Ottoman */}
+          <NavLink
+            to="/collection?category=Furniture&subCategory=Ottoman&capacity=2"
+            className={({ isActive }) =>
+              `flex items-center justify-between px-6 py-4 border-b cursor-pointer
+               ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
+            }
+            onClick={() => setVisible(false)}
+          >
+            <span>OTTOMAN</span>
+            <img src={assets.ottoman} className="w-16 h-12 object-cover rounded" alt="Ottoman" />
+          </NavLink>
 
-            {/* Overlay to prevent scrolling and close menu when clicked */}
-            {visible && <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={() => setVisible(false)}></div>}
+          {/* (add more NavLink sections here as needed) */}
         </div>
+      </div>
+
+      {/* Overlay */}
+      {visible && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 z-40"
+          onClick={() => setVisible(false)}
+        />
+      )}
+    </div>
     );
 };
 
