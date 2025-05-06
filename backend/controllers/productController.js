@@ -43,9 +43,7 @@ const addProduct = async (req, res) => {
                   if (item && item.path) {
                     // Upload thumbnail (first image) with transformations
                     if (item === images[0]) { 
-                      const thumbnailResult = await cloudinary.uploader.upload(item.path, { 
-                        transformation: [{ width: 300, height: 300, crop: "fill" }] 
-                      });
+                      const thumbnailResult = await cloudinary.uploader.upload(item.path);
                       return thumbnailResult.secure_url;
                     }
                     // Upload other images normally
