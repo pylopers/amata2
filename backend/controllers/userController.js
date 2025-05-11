@@ -2,7 +2,11 @@ import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js";
+import passport from "../middleware/passport.js";
+import { OAuth2Client } from "google-auth-library";
 
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const client = new OAuth2Client(CLIENT_ID);
 
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET)
@@ -38,47 +42,47 @@ const loginUser = async (req, res) => {
     }
 }
 
-// Route for user register
 const registerUser = async (req, res) => {
-    try {
+  try {
+    const { name, email, phone, dob, password } = req.body;
 
-        const { name, email, password } = req.body;
+    // check existing email or phone
+    if (await userModel.findOne({ email }))
+      return res.json({ success: false, message: "Email already in use" });
+    if (await userModel.findOne({ phone }))
+      return res.json({ success: false, message: "Phone already in use" });
 
-        // checking user already exists or not
-        const exists = await userModel.findOne({ email });
-        if (exists) {
-            return res.json({ success: false, message: "User already exists" })
-        }
+    // validate email, phone, dob, password
+    if (!validator.isEmail(email))
+      return res.json({ success: false, message: "Invalid email" });
+    if (!validator.isMobilePhone(phone, "any"))
+      return res.json({ success: false, message: "Invalid phone number" });
+    if (!dob || isNaN(new Date(dob).getTime()))
+      return res.json({ success: false, message: "Invalid date of birth" });
+    if (password.length < 8)
+      return res.json({ success: false, message: "Password too short" });
 
-        // validating email format & strong password
-        if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Please enter a valid email" })
-        }
-        if (password.length < 8) {
-            return res.json({ success: false, message: "Please enter a strong password" })
-        }
+    // hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-        // hashing user password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
+    // save user
+    const newUser = new userModel({
+      name, email, phone, dob, password: hashedPassword
+    });
+    const user = await newUser.save();
 
-        const newUser = new userModel({
-            name,
-            email,
-            password: hashedPassword
-        })
+    // create token
+    const token = createToken(user._id);
+    res.json({ success: true, token });
 
-        const user = await newUser.save()
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-        const token = createToken(user._id)
 
-        res.json({ success: true, token })
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}
 // Add a new saved address
 const saveAddress = async (req, res) => {
     try {
@@ -127,5 +131,51 @@ const adminLogin = async (req, res) => {
     }
 }
 
+// in controllers/userController.js
+export const googleFrontEndLogin = async (req, res) => {
+  try {
+    console.log("googleFrontEndLogin body:", req.body);
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No credential provided" });
+    }
+
+    // Verify the Google ID token
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const email = payload.email;
+    const name = payload.name;
+    const googleId = payload.sub;
+
+    // Find existing user
+    let existingUser = await userModel.findOne({ email });
+
+    // If user doesn't exist, create a new one
+    if (!existingUser) {
+      existingUser = await userModel.create({
+        name,
+        email,
+        authProvider: "google",
+        googleId,
+        // phone, dob, password are optional for google users per your schema
+      });
+    }
+
+    // Issue your own JWT
+    const token = createToken(existingUser._id);
+    res.json({ success: true, token });
+  } catch (err) {
+    console.error("googleFrontEndLogin error:", err);
+    res
+      .status(400)
+      .json({ success: false, message: "Invalid Google credential" });
+  }
+};
 
 export { loginUser, registerUser, adminLogin, saveAddress, getSavedAddresses }

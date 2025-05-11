@@ -242,46 +242,40 @@ const getProductReviews = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-    try {
-        console.log("Received update request with body:", req.body);
+  try {
+    const { id, name, category, price, mainProduct, inStock, bestseller } = req.body;
+    const existing = await productModel.findById(id);
+    if (!existing) return res.status(404).json({ success: false, message: "Not found" });
 
-        const { id, name, category, price, mainProduct, inStock, bestseller, image } = req.body;
+    // 1) handle any new uploads
+    const files = Object.values(req.files).flat(); // multer.fields puts each array under req.files.image1, …
+    const newUrls = await Promise.all(files.map(f =>
+      cloudinary.uploader.upload(f.path).then(r => r.secure_url)
+    ));
 
-        if (!id) {
-            return res.status(400).json({ success: false, message: "Product ID is required" });
-        }
+    // 2) merge old images with new ones
+    const updatedImages = [
+      // keep any existing URLs that the user didn't replace
+      ...(Array.isArray(existing.image) ? existing.image : []),
+      ...newUrls
+    ];
 
-        console.log("Received bestseller value:", bestseller);
+    // 3) do the update
+    existing.name = name;
+    existing.category = category;
+    existing.price = price;
+    existing.inStock = inStock === 'true';
+    existing.mainProduct = mainProduct === 'true';
+    existing.bestseller = bestseller === 'true';
+    existing.image = updatedImages;
+    await existing.save();
 
-        const updatedProduct = await productModel.findByIdAndUpdate(
-            id,
-            {
-                $set: {
-                    name,
-                    category,
-                    price,
-                    inStock: Boolean(inStock),
-                    mainProduct,
-                    bestseller: bestseller === true || bestseller === "true",  // ✅ Fix applied
-                    ...(image && { image })
-                },
-            },
-            { new: true }
-        );
-
-        console.log("Updated product:", updatedProduct);
-
-        if (!updatedProduct) {
-            return res.status(404).json({ success: false, message: "Product not found" });
-        }
-
-        res.json({ success: true, message: "Product updated successfully", product: updatedProduct });
-    } catch (error) {
-        console.error("Error updating product:", error);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
+    return res.json({ success: true, message: "Product updated", product: existing });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
 };
-
 
 
 
