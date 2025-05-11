@@ -285,7 +285,7 @@ const handleDecrease = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
         </div>
       </div>
 
-      <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
+      <RelatedProducts category={productData.category} subCategory={productData.subCategory} currentProductId = {productData._id} />
       <div className='mt-20'>
       {/* Tabs: Description & Reviews */}
       <div className='flex border-b'>
