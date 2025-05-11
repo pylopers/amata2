@@ -5,7 +5,7 @@ import ProductItem from './ProductItem';
 
 
 
-const RelatedProducts = ({category,subCategory}) => {
+const RelatedProducts = ({category,subCategory,currentProductId }) => {
 
     const { products } = useContext(ShopContext);
     const [related,setRelated] = useState([]);
@@ -18,11 +18,13 @@ const RelatedProducts = ({category,subCategory}) => {
             
             productsCopy = productsCopy.filter((item) => category === item.category);
             productsCopy = productsCopy.filter((item) => subCategory === item.subCategory);
+            productsCopy = productsCopy.filter((item) => item._id !== currentProductId);
+             
 
             setRelated(productsCopy.slice(0,5));
         }
         
-    },[products])
+    },[products, category, subCategory, currentProductId])
 
   return (
     <div className='mt-4'>
@@ -40,7 +42,7 @@ const RelatedProducts = ({category,subCategory}) => {
                         <ProductItem 
                             id={item._id} 
                             name={item.name} 
-                            image={item.image} 
+                            thumbnail={item.thumbnail} 
                             price={item.price} 
                             originalPrice={item.originalPrice}
                             averageRating={item.averageRating}
