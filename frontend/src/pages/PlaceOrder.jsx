@@ -21,6 +21,8 @@ const PlaceOrder = () => {
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [useSavedAddress, setUseSavedAddress] = useState(false);
   const [loading, setLoading] = useState(false);
+  // NEW: checkbox state
+  const [saveAddressChecked, setSaveAddressChecked] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -85,6 +87,8 @@ const PlaceOrder = () => {
       phoneCode: '+91',
       phone: ''
     });
+    // reset checkbox when switching to new
+    setSaveAddressChecked(false);
   };
 
   const handleStateChange = e => {
@@ -112,6 +116,26 @@ const PlaceOrder = () => {
 
     if (!orderItems.length) return toast.error("Your cart is empty!");
     setLoading(true);
+
+    // NEW: Save address if user opted in
+    if (!useSavedAddress && saveAddressChecked) {
+      try {
+        const { data } = await axios.post(
+          `${backendUrl}/api/user/save-address`,
+          { address: formData },
+          { headers: { token } }
+        );
+        if (data.success) {
+          setSavedAddresses(data.savedAddresses);
+          toast.success("Address saved!");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to save address.");
+      }
+    }
 
     try {
       const orderData = {
@@ -162,15 +186,30 @@ const PlaceOrder = () => {
           toast.error("Payment verification error!");
         }
       },
-      prefill: {
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        contact: formData.phone
-      },
-      theme: { color: "#000000" }
-    };
-    new window.Razorpay(options).open();
+
+      modal: {
+      ondismiss: async () => {
+        // user cancelled payment → delete the pending order
+        try {
+          await axios.post(
+            `${backendUrl}/api/order/delete-pending`,
+            { orderId: order.receipt  },
+            { headers: { token } }
+          );
+        } catch (err) {
+          console.error("Failed to delete pending order", err);
+        }
+      }
+    },
+    prefill: {
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      contact: formData.phone
+    },
+    theme: { color: "#000000" }
   };
+  new window.Razorpay(options).open();
+};
 
   // build city list whenever state changes
   const citiesForState = formData.state
@@ -190,30 +229,34 @@ const PlaceOrder = () => {
         {/* Saved Addresses */}
         <div>
           <h3 className="text-lg font-semibold">Saved Addresses</h3>
-          {savedAddresses.map((addr, i) => (
-            <div key={i} className="border p-2 mb-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="savedAddress"
-                  className="mr-2"
-                  checked={
-                    useSavedAddress &&
-                    formData.street === addr.street &&
-                    formData.zipcode === addr.zipcode
-                  }
-                  onChange={() => selectSavedAddress(i)}
-                />
-                <span className="font-bold">
-                  {addr.firstName} {addr.lastName}
-                </span>
-              </label>
-              <p>
-                {addr.street}, {addr.city}, {addr.state}, {addr.zipcode}
-              </p>
-            </div>
-          ))}
-          {useSavedAddress && (
+          {savedAddresses.length === 0 ? (
+            <p className="italic text-gray-500">No saved addresses</p>
+          ) : (
+            savedAddresses.map((addr, i) => (
+              <div key={i} className="border p-2 mb-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="savedAddress"
+                    className="mr-2"
+                    checked={
+                      useSavedAddress &&
+                      formData.street === addr.street &&
+                      formData.zipcode === addr.zipcode
+                    }
+                    onChange={() => selectSavedAddress(i)}
+                  />
+                  <span className="font-bold">
+                    {addr.firstName} {addr.lastName}
+                  </span>
+                </label>
+                <p>
+                  {addr.street}, {addr.city}, {addr.state}, {addr.zipcode}
+                </p>
+              </div>
+            ))
+          )}
+          {useSavedAddress && savedAddresses.length > 0 && (
             <button
               type="button"
               onClick={useNewAddress}
@@ -260,12 +303,12 @@ const PlaceOrder = () => {
 
             <input
               required
-              name="street"
-              onChange={onChangeHandler}
-              value={formData.street}
-              className="border rounded py-1.5 px-4 w-full"
-              type="text"
-              placeholder="Street"
+                name="street"
+                onChange={onChangeHandler}
+                value={formData.street}
+                className="border rounded py-1.5 px-4 w-full"
+                type="text"
+                placeholder="Street"
             />
 
             {/* Country (fixed to India) */}
@@ -337,6 +380,20 @@ const PlaceOrder = () => {
                 type="tel"
                 placeholder="Phone Number"
               />
+            </div>
+
+            {/* NEW: Save this address */}
+            <div className="mt-2 flex items-center">
+              <input
+                type="checkbox"
+                id="saveAddress"
+                checked={saveAddressChecked}
+                onChange={() => setSaveAddressChecked(prev => !prev)}
+                className="mr-2"
+              />
+              <label htmlFor="saveAddress" className="text-sm">
+                Save this address
+              </label>
             </div>
           </>
         )}

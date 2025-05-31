@@ -1,5 +1,5 @@
 import express from 'express'
-import {placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, verifyStripe, verifyRazorpay} from '../controllers/orderController.js'
+import {deletePendingOrder, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, verifyStripe, verifyRazorpay,   getOrderById} from '../controllers/orderController.js'
 import adminAuth  from '../middleware/adminAuth.js'
 import authUser from '../middleware/auth.js'
 
@@ -16,9 +16,12 @@ orderRouter.post('/razorpay',authUser,placeOrderRazorpay)
 
 // User Feature 
 orderRouter.post('/userorders',authUser,userOrders)
+orderRouter.get("/:orderId", authUser, getOrderById)
 
 // verify payment
 orderRouter.post('/verifyStripe',authUser, verifyStripe)
 orderRouter.post('/verifyRazorpay',authUser, verifyRazorpay)
+
+orderRouter.post('/delete-pending', authUser, deletePendingOrder);
 
 export default orderRouter

@@ -247,29 +247,33 @@ const updateProduct = async (req, res) => {
     const existing = await productModel.findById(id);
     if (!existing) return res.status(404).json({ success: false, message: "Not found" });
 
-    // 1) handle any new uploads
-    const files = Object.values(req.files).flat(); // multer.fields puts each array under req.files.image1, …
-    const newUrls = await Promise.all(files.map(f =>
-      cloudinary.uploader.upload(f.path).then(r => r.secure_url)
-    ));
+    // controllers/productController.js (inside updateProduct)
+const slotNames = [
+  'image1','image2','image3','image4','image5',
+  'image6','image7','image8','image9','image10'
+];
 
-    // 2) merge old images with new ones
-    const updatedImages = [
-      // keep any existing URLs that the user didn't replace
-      ...(Array.isArray(existing.image) ? existing.image : []),
-      ...newUrls
-    ];
+// 1) Build an array of Promises for each slot
+const slotPromises = slotNames.map(slot => {
+  const files = req.files[slot];
+  if (files && files[0]) {
+    // user picked a new file for this slot → upload that
+    return cloudinary.uploader
+      .upload(files[0].path)
+      .then(r => r.secure_url);
+  }
+  // else: keep the old URL at this index (if it exists)
+  const idx = slotNames.indexOf(slot);
+  return existing.image[idx] || null;
+});
 
-    // 3) do the update
-    existing.name = name;
-    existing.category = category;
-    existing.price = price;
-    existing.inStock = inStock === 'true';
-    existing.mainProduct = mainProduct === 'true';
-    existing.bestseller = bestseller === 'true';
-    existing.image = updatedImages;
-    await existing.save();
+// 2) Resolve them all and filter out nulls
+const merged = (await Promise.all(slotPromises)).filter(u => u);
 
+// 3) Save them back
+existing.thumbnail = merged[0] || existing.thumbnail;
+existing.image     = merged.slice(1);
+await existing.save();
     return res.json({ success: true, message: "Product updated", product: existing });
   } catch (err) {
     console.error(err);

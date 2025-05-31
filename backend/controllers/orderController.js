@@ -1,5 +1,6 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
+import { sendOrderEmail, sendOrderSMS } from "../utils/notifications.js";
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
 
@@ -103,6 +104,28 @@ const placeOrderStripe = async (req,res) => {
         res.json({success:false,message:error.message})
     }
 }
+// Get one order by its ID (for the logged‐in user)
+const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params   // we’ll use the route param
+    const order = await orderModel.findById(orderId)
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" })
+    }
+
+    // Optionally, confirm that this order belongs to req.user (if needed)
+    // e.g. if your authUser middleware sets req.userId = the logged‐in user’s ID:
+    // if (order.userId !== req.userId) {
+    //   return res.status(403).json({ success: false, message: "Not authorized" })
+    // }
+
+    res.json({ success: true, order })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
 
 // Verify Stripe 
 const verifyStripe = async (req,res) => {
@@ -165,27 +188,34 @@ const placeOrderRazorpay = async (req,res) => {
     }
 }
 
-const verifyRazorpay = async (req,res) => {
-    try {
-        
-        const { userId, razorpay_order_id  } = req.body
+const verifyRazorpay = async (req, res) => {
+  try {
+    const { userId, razorpay_order_id } = req.body;
 
-        const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
-        if (orderInfo.status === 'paid') {
-            await orderModel.findByIdAndUpdate(orderInfo.receipt,{payment:true});
-            await userModel.findByIdAndUpdate(userId,{cartData:{}})
-            res.json({ success: true, message: "Payment Successful" })
-        } else {
-             res.json({ success: false, message: 'Payment Failed' });
-        }
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+    if (orderInfo.status === 'paid') {
+      // — your original updates —
+      await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
+      // ← NEW: fetch the just-updated order so we can read its address/email
+      const updatedOrder = await orderModel.findById(orderInfo.receipt);
+
+      // ← NEW: fire off email & SMS (won’t block the response)
+      sendOrderEmail(updatedOrder.address.email, updatedOrder)
+        .catch(err => console.error("Email error:", err));
+      sendOrderSMS(updatedOrder.address.phone, updatedOrder)
+        .catch(err => console.error("SMS error:", err));
+
+      return res.json({ success: true, message: "Payment Successful" });
+    } else {
+      return res.json({ success: false, message: 'Payment Failed' });
     }
+  } catch (error) {
+    console.log(error);
+    return res.json({ success: false, message: error.message });
+  }
 }
-
-
 // All Orders data for Admin Panel
 const allOrders = async (req,res) => {
 
@@ -217,18 +247,35 @@ const userOrders = async (req,res) => {
 }
 
 // update order status from Admin Panel
-const updateStatus = async (req,res) => {
-    try {
-        
-        const { orderId, status } = req.body
+const updateStatus = async (req, res) => {
+  try {
+    const { orderId, status, trackingUrl } = req.body
 
-        await orderModel.findByIdAndUpdate(orderId, { status })
-        res.json({success:true,message:'Status Updated'})
+    // Build an update object
+    const updateData = { status }
 
-    } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
+    // Only set trackingUrl if status is "Shipped" and trackingUrl is provided
+    if (status === "Shipped" && typeof trackingUrl === "string" && trackingUrl.trim() !== "") {
+      updateData.trackingUrl = trackingUrl.trim()
     }
+
+    await orderModel.findByIdAndUpdate(orderId, updateData)
+    res.json({ success: true, message: "Status Updated" })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
 }
 
-export {verifyRazorpay, verifyStripe ,placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus}
+const deletePendingOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    await orderModel.findByIdAndDelete(orderId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export {verifyRazorpay, verifyStripe ,placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, getOrderById, deletePendingOrder}
