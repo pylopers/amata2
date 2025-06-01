@@ -13,9 +13,11 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
 import TrackOrder from './pages/TrackOrder'
+import DeliveryReturns from './pages/Delivery'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Verify from './pages/Verify'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 const App = () => {
   return (
@@ -47,6 +49,8 @@ const App = () => {
           <Route path="/orders" element={<Orders />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/track/:orderId" element={<TrackOrder />} />
+          <Route path="/Delivery" element={<DeliveryReturns/>}/>
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy/>}/>
         </Routes>
       </div>
       <Footer />
