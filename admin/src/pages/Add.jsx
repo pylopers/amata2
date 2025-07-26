@@ -352,7 +352,7 @@ const Add = ({ token }) => {
         <div>
           <p className="mb-2">Seating Capacity</p>
           <input
-            type="number"
+            type="text"
             className="px-3 py-2 sm:w-[150px]"
             value={seatingCapacity}
             onChange={(e) => setSeatingCapacity(e.target.value)}
