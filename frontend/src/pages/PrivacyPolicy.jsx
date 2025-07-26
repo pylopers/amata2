@@ -82,8 +82,8 @@ const PrivacyPolicy = () => {
         <h2 className='text-xl font-semibold'>Your Rights & Choices</h2>
         <p>
           You have the right to access, update, or delete your personal information at any time. To do so, log in to your account or contact us at{' '}
-          <a href="mailto:privacy@amata-sofas.com" className='text-blue-600 underline'>
-            privacy@amata-sofas.com
+          <a href="mailto:amatahome07@gmail.com" className='text-blue-600 underline'>
+            amatahome07@gmail.com
           </a>
           . You may also opt out of marketing communications or request that we stop sharing your information with certain third parties.
         </p>
@@ -97,10 +97,10 @@ const PrivacyPolicy = () => {
         <h2 className='text-xl font-semibold'>Contact Us</h2>
         <p>
           If you have questions, concerns, or requests regarding this Privacy Policy, please contact our Data Protection Officer at{' '}
-          <a href="mailto:privacy@amata-sofas.com" className='text-blue-600 underline'>
-            privacy@amata-sofas.com
+          <a href="mailto:amatahome07@gmail.com" className='text-blue-600 underline'>
+            amatahome07@gmail.com
           </a>{' '}
-          or call us at +1 (800) 123-4567.
+          or call us at +91 89289 37345.
         </p>
       </div>
 

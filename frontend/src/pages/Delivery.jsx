@@ -67,8 +67,8 @@ const DeliveryReturns = () => {
         </p>
         <p>
           If you need to exchange or return, email us at{' '}
-          <a href="mailto:support@amata-sofas.com" className='text-blue-600 underline'>
-            support@amata-sofas.com
+          <a href="mailto:amatahome07@gmail.com" className='text-blue-600 underline'>
+            amatahome07@gmail.com
           </a>{' '}
           with your order number and photos (if applicable). One of our representatives will guide
           you through the next steps.
