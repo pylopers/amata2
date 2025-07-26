@@ -125,7 +125,7 @@ const Navbar = () => {
                 <img src={assets.tseater} className="w-16 h-12 object-cover rounded" alt="3 Seater" />
               </NavLink>
               <NavLink
-                to={`/collection?category=Sofa&capacity=${encodeURIComponent('5+')}`}
+                to={`/collection?category=Sofa&capacity=${encodeURIComponent('3+2')}`}
                 className={({ isActive }) =>
                   `flex items-center justify-between px-8 py-3 border-b cursor-pointer
                    ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
