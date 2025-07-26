@@ -28,7 +28,7 @@ const reviewSchema = new mongoose.Schema({
     width: { type: Number, required: true },
     height: { type: Number, required: true },
     material: { type: String, required: true },
-    seatingCapacity: { type: Number, required: true },
+    seatingCapacity: { type: String, required: true },
     color: { type: String, required: true },
     model: { type: String, required: true },
     assemblyRequired: { type: String, required: true },
