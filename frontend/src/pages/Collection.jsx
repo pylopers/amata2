@@ -141,7 +141,7 @@ const Collection = () => {
           {category.includes('Sofa') && (
             <div className="border p-4 rounded">
               <p className="text-sm font-semibold mb-2">SEATING CAPACITY</p>
-              {['2','3','4','5+'].map(cap => (
+              {['2','3','3+2','4','5+'].map(cap => (
                 <label key={cap} className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
