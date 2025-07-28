@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Country, State, City } from 'country-state-city';
 
 const PlaceOrder = () => {
+  console.log('🔄 stub render');
   const {
     navigate,
     backendUrl,
