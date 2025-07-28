@@ -39,8 +39,9 @@ const PlaceOrder = () => {
 
   // load all Indian states once
   const indianStates = useMemo(() => {
-    return State.getStatesOfCountry('IN');
-  }, []);
+    const ind = Country.getAllCountries().find(c => c.isoCode === 'IN')
+    return ind ? State.getStatesOfCountry('IN') : []
+  }, [])
 
   // Fetch saved addresses
   useEffect(() => {
@@ -213,9 +214,11 @@ const PlaceOrder = () => {
 };
 
   // build city list whenever state changes
-  const citiesForState = formData.state
-    ? City.getCitiesOfState('IN', indianStates.find(s => s.name === formData.state)?.isoCode)
-    : [];
+  const citiesForState = useMemo(() => {
+    if (!formData.state) return []
+    const stateObj = indianStates.find(s => s.name === formData.state)
+    return stateObj ? City.getCitiesOfState('IN', stateObj.isoCode) : []
+  }, [formData.state, indianStates])
 
   return (
     <form
