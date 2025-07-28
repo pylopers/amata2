@@ -40,7 +40,7 @@ const PlaceOrder = () => {
     return State.getStatesOfCountry('IN');
   }, []);
 
-  /*
+  
   useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
@@ -56,7 +56,7 @@ const PlaceOrder = () => {
     };
     fetchSavedAddresses();
   }, [backendUrl, token]);
-  */
+
 
   /*
   const onChangeHandler = e => {
