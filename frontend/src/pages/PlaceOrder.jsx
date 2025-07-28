@@ -60,12 +60,12 @@ const PlaceOrder = () => {
     fetchSavedAddresses();
   }, [backendUrl, token]);*/}
 
-  const onChangeHandler = e => {
+  {/*const onChangeHandler = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  };*/}
 
-  const selectSavedAddress = index => {
+  {/*const selectSavedAddress = index => {
     const addr = savedAddresses[index];
     setFormData({
       ...addr,
@@ -92,20 +92,20 @@ const PlaceOrder = () => {
     // reset checkbox when switching to new
     setSaveAddressChecked(false);
   };
-
-  const handleStateChange = e => {
+*/}
+{/*}  const handleStateChange = e => {
     setFormData(prev => ({
       ...prev,
       state: e.target.value,
       city: ''
     }));
   };
-
-  const handleCityChange = e => {
+*/}
+{/*  const handleCityChange = e => {
     setFormData(prev => ({ ...prev, city: e.target.value }));
-  };
+  };*/}
 
-  const handlePlaceOrder = async () => {
+  {/*const handlePlaceOrder = async () => {
     if (!token) return toast.error("Please login to place an order.");
 
     const orderItems = Object.entries(cartItems)
@@ -158,9 +158,9 @@ const PlaceOrder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/}
 
-  const initPay = order => {
+  {/*const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -211,7 +211,7 @@ const PlaceOrder = () => {
     theme: { color: "#000000" }
   };
   new window.Razorpay(options).open();
-};
+};*/}
 
   // build city list whenever state changes
   const citiesForState = useMemo(() => {
