@@ -8,7 +8,7 @@ import { Country, State, City } from 'country-state-city';
 
 const PlaceOrder = () => {
   console.log('🔄 stub render');
-  const {
+  {/*const {
     navigate,
     backendUrl,
     token,
@@ -227,7 +227,7 @@ const PlaceOrder = () => {
           <Title text1="DELIVERY" text2="INFORMATION" />
         </div>
 
-        {/* Saved Addresses */}
+        
         <div>
           <h3 className="text-lg font-semibold">Saved Addresses</h3>
           {savedAddresses.length === 0 ? (
@@ -268,7 +268,7 @@ const PlaceOrder = () => {
           )}
         </div>
 
-        {/* New / Edited Address */}
+        
         {!useSavedAddress && (
           <>
             <div className="flex gap-3">
@@ -312,7 +312,7 @@ const PlaceOrder = () => {
                 placeholder="Street"
             />
 
-            {/* Country (fixed to India) */}
+            
             <select
               value="India"
               disabled
@@ -321,7 +321,7 @@ const PlaceOrder = () => {
               <option>India</option>
             </select>
 
-            {/* State */}
+            
             <select
               required
               name="state"
@@ -337,7 +337,7 @@ const PlaceOrder = () => {
               ))}
             </select>
 
-            {/* City */}
+           
             {formData.state && (
               <select
                 required
@@ -365,7 +365,7 @@ const PlaceOrder = () => {
               placeholder="Zip Code"
             />
 
-            {/* Phone with prefix */}
+            
             <div className="flex">
               <input
                 readOnly
@@ -383,7 +383,6 @@ const PlaceOrder = () => {
               />
             </div>
 
-            {/* NEW: Save this address */}
             <div className="mt-2 flex items-center">
               <input
                 type="checkbox"
@@ -414,7 +413,7 @@ const PlaceOrder = () => {
         </div>
       </div>
     </form>
-  );
+  );*/}
 };
 
 export default PlaceOrder;
