@@ -44,7 +44,7 @@ const PlaceOrder = () => {
   }, [])
 
   // Fetch saved addresses
-  useEffect(() => {
+  {/*useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
         const { data } = await axios.get(
@@ -58,7 +58,7 @@ const PlaceOrder = () => {
       }
     };
     fetchSavedAddresses();
-  }, [backendUrl, token]);
+  }, [backendUrl, token]);*/}
 
   const onChangeHandler = e => {
     const { name, value } = e.target;
