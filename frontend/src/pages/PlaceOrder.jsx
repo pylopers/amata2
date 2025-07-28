@@ -77,7 +77,7 @@ const PlaceOrder = () => {
   };
   
 
-  /*
+  
   const useNewAddress = () => {
     setUseSavedAddress(false);
     setFormData({
@@ -94,9 +94,9 @@ const PlaceOrder = () => {
     });
     setSaveAddressChecked(false);
   };
-  */
+  
 
-  /*
+  
   const handleStateChange = e => {
     setFormData(prev => ({
       ...prev,
@@ -108,9 +108,9 @@ const PlaceOrder = () => {
   const handleCityChange = e => {
     setFormData(prev => ({ ...prev, city: e.target.value }));
   };
-  */
+  
 
-  /*
+  
   const handlePlaceOrder = async () => {
     if (!token) return toast.error("Please login to place an order.");
 
@@ -164,9 +164,9 @@ const PlaceOrder = () => {
       setLoading(false);
     }
   };
-  */
+  
 
-  /*
+  
   const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
@@ -217,13 +217,13 @@ const PlaceOrder = () => {
     };
     new window.Razorpay(options).open();
   };
-  */
+  
 
-  /*
+  
   const citiesForState = formData.state
     ? City.getCitiesOfState('IN', indianStates.find(s => s.name === formData.state)?.isoCode)
     : [];
-  */
+  
 
   return (
     <div className="p-10">
