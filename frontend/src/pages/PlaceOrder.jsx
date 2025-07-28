@@ -58,14 +58,14 @@ const PlaceOrder = () => {
   }, [backendUrl, token]);
 
 
-  /*
+  
   const onChangeHandler = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  */
+  
 
-  /*
+  
   const selectSavedAddress = index => {
     const addr = savedAddresses[index];
     setFormData({
@@ -75,7 +75,7 @@ const PlaceOrder = () => {
     });
     setUseSavedAddress(true);
   };
-  */
+  
 
   /*
   const useNewAddress = () => {
