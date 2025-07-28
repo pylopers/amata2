@@ -7,7 +7,6 @@ export default defineConfig({
   server: {port:5173},
   build: {
     target:['es2015', 'safari12'],
-    sourcemap: true,
     rollupOptions: {
       external: ['swiper'],
     }
