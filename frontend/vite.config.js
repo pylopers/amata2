@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {port:5173},
   build: {
+    target:['es2015', 'safari12'],
     rollupOptions: {
       external: ['swiper'],
     }
