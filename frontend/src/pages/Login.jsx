@@ -136,7 +136,7 @@ const Login = () => {
         {currentState === 'Login' ? 'Sign In' : 'Sign Up'}
       </button>
 
-      {/*<GoogleLogin
+      <GoogleLogin
         onSuccess={(credentialResponse) => {
           axios
             .post(`${backendUrl}/api/user/google`, {
@@ -155,7 +155,7 @@ const Login = () => {
         onError={() => {
           toast.error('Google sign-in error');
         }}
-      />*/}
+      />
     </form>
   );
 };
