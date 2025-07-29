@@ -220,9 +220,9 @@ const PlaceOrder = () => {
   
 
   
-  /*const citiesForState = formData.state
+  const citiesForState = formData.state
     ? City.getCitiesOfState('IN', indianStates.find(s => s.name === formData.state)?.isoCode)
-    : [];*/
+    : [];
   
 
   return (
