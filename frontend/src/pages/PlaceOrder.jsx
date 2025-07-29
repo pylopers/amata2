@@ -219,6 +219,21 @@ const PlaceOrder = () => {
   };
   
 
+  const [citiesForState, setCitiesForState] = useState([]);
+  useEffect(() => {
+    if (!formData.state) {
+      setCitiesForState([]);
+      return;
+    }
+    const stateObj = indianStates.find(s => s.name === formData.state);
+    if (stateObj) {
+      const cities = City.getCitiesOfState('IN', stateObj.isoCode);
+      setCitiesForState(cities);
+    } else {
+      setCitiesForState([]);
+    }
+  }, [formData.state, indianStates]);
+
   
   /*const citiesForState = useMemo(() => {
     if (!formData.state) return [];
@@ -349,23 +364,24 @@ const PlaceOrder = () => {
               ))}
             </select>
 
-            {/* City 
+            {/* City */}
             {formData.state && (
-              <select
-                required
-                name="city"
-                value={formData.city}
-                onChange={handleCityChange}
-                className="border rounded py-1.5 px-4 w-full"
-              >
-                <option value="">Select City</option>
-                {citiesForState.map(c => (
-                  <option key={c.isoCode} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            )}*/}
+  <select
+    required
+    name="city"
+    value={formData.city}
+    onChange={handleCityChange}
+    className="border rounded py-1.5 px-4 w-full"
+  >
+    <option value="">Select City</option>
+    {citiesForState.map(c => (
+      <option key={c.isoCode} value={c.name}>
+        {c.name}
+      </option>
+    ))}
+  </select>
+)}
+
 
             <input
               required
