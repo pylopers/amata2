@@ -268,7 +268,7 @@ setAvailableCapacities(Array.from(capacitySet));
             />
             {!isAvailable && (
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 w-[93%] h-[2px] bg-red-600 rotate-[-45deg] origin-center translate-x-[-50%] translate-y-[-100%] rounded"></div>
+                <div className="absolute top-1/2 left-1/2 w-[97%] h-[2px] bg-red-600 rotate-[-45deg] origin-center translate-x-[-47%] translate-y-[-100%] rounded"></div>
               </div>
             )}
           </div>
