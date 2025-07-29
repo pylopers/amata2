@@ -5,6 +5,7 @@ import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Country, State, City } from 'country-state-city';
+import { Combobox } from '@headlessui/react';
 
 const PlaceOrder = () => {
   const {
@@ -36,9 +37,10 @@ const PlaceOrder = () => {
     phone: ''
   });
 
+  const [cityQuery, setCityQuery] = useState('');
+
   const indianStates = useMemo(() => State.getStatesOfCountry('IN'), []);
 
-  
   useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
@@ -55,15 +57,11 @@ const PlaceOrder = () => {
     fetchSavedAddresses();
   }, [backendUrl, token]);
 
-
-  
   const onChangeHandler = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
 
-  
   const selectSavedAddress = index => {
     const addr = savedAddresses[index];
     setFormData({
@@ -73,9 +71,7 @@ const PlaceOrder = () => {
     });
     setUseSavedAddress(true);
   };
-  
 
-  
   const useNewAddress = () => {
     setUseSavedAddress(false);
     setFormData({
@@ -91,24 +87,23 @@ const PlaceOrder = () => {
       phone: ''
     });
     setSaveAddressChecked(false);
+    setCityQuery('');
   };
-  
 
-  
   const handleStateChange = e => {
     setFormData(prev => ({
       ...prev,
       state: e.target.value,
       city: ''
     }));
+    setCityQuery('');
   };
 
-  const handleCityChange = e => {
-    setFormData(prev => ({ ...prev, city: e.target.value }));
+  const handleCityChange = val => {
+    setFormData(prev => ({ ...prev, city: val }));
+    setCityQuery(val);
   };
-  
 
-  
   const handlePlaceOrder = async () => {
     if (!token) return toast.error("Please login to place an order.");
 
@@ -162,9 +157,7 @@ const PlaceOrder = () => {
       setLoading(false);
     }
   };
-  
 
-  
   const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
@@ -215,19 +208,24 @@ const PlaceOrder = () => {
     };
     new window.Razorpay(options).open();
   };
-  
 
-  const citiesForState = useMemo(() => {
+  // derive full city list when state changes
+  const fullCities = useMemo(() => {
     if (!formData.state) return [];
     const stateObj = indianStates.find(s => s.name === formData.state);
-    return stateObj
-      ? City.getCitiesOfState('IN', stateObj.isoCode)
-      : [];
+    return stateObj ? City.getCitiesOfState('IN', stateObj.isoCode) : [];
   }, [formData.state, indianStates]);
-  
+
+  // filter based on query
+  const filteredCities = useMemo(() => {
+    if (cityQuery === '') return fullCities.slice(0, 50);
+    return fullCities
+      .filter(c => c.name.toLowerCase().includes(cityQuery.toLowerCase()))
+      .slice(0, 50);
+  }, [cityQuery, fullCities]);
 
   return (
-        <form
+    <form
       onSubmit={e => e.preventDefault()}
       className="ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t"
     >
@@ -256,13 +254,9 @@ const PlaceOrder = () => {
                     }
                     onChange={() => selectSavedAddress(i)}
                   />
-                  <span className="font-bold">
-                    {addr.firstName} {addr.lastName}
-                  </span>
+                  <span className="font-bold">{addr.firstName} {addr.lastName}</span>
                 </label>
-                <p>
-                  {addr.street}, {addr.city}, {addr.state}, {addr.zipcode}
-                </p>
+                <p>{addr.street}, {addr.city}, {addr.state}, {addr.zipcode}</p>
               </div>
             ))
           )}
@@ -313,12 +307,12 @@ const PlaceOrder = () => {
 
             <input
               required
-                name="street"
-                onChange={onChangeHandler}
-                value={formData.street}
-                className="border rounded py-1.5 px-4 w-full"
-                type="text"
-                placeholder="Street"
+              name="street"
+              onChange={onChangeHandler}
+              value={formData.street}
+              className="border rounded py-1.5 px-4 w-full"
+              type="text"
+              placeholder="Street"
             />
 
             {/* Country (fixed to India) */}
@@ -340,30 +334,42 @@ const PlaceOrder = () => {
             >
               <option value="">Select State</option>
               {indianStates.map(s => (
-                <option key={s.isoCode} value={s.name}>
-                  {s.name}
-                </option>
+                <option key={s.isoCode} value={s.name}>{s.name}</option>
               ))}
             </select>
 
-            {/* City */}
+            {/* City Autocomplete */}
             {formData.state && (
-  <select
-    required
-    name="city"
-    value={formData.city}
-    onChange={handleCityChange}
-    className="border rounded py-1.5 px-4 w-full"
-  >
-    <option value="">Select City</option>
-    {citiesForState.map(c => (
-      <option key={c.isoCode} value={c.name}>
-        {c.name}
-      </option>
-    ))}
-  </select>
-)}
-
+              <Combobox value={formData.city} onChange={handleCityChange} nullable>
+                <div className="relative mt-1">
+                  <Combobox.Input
+                    className="border rounded py-1.5 px-4 w-full"
+                    onChange={e => setCityQuery(e.target.value)}
+                    displayValue={city => city}
+                    placeholder="Type to search city"
+                    required
+                  />
+                  <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                    ▼
+                  </Combobox.Button>
+                  {filteredCities.length > 0 && (
+                    <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded bg-white py-1 shadow-lg">
+                      {filteredCities.map(c => (
+                        <Combobox.Option
+                          key={c.isoCode}
+                          value={c.name}
+                          className={({ active }) =>
+                            `cursor-pointer select-none px-4 py-2 ${active ? 'bg-blue-100' : ''}`
+                          }
+                        >
+                          {c.name}
+                        </Combobox.Option>
+                      ))}
+                    </Combobox.Options>
+                  )}
+                </div>
+              </Combobox>
+            )}
 
             <input
               required
@@ -393,7 +399,7 @@ const PlaceOrder = () => {
               />
             </div>
 
-            {/* NEW: Save this address */}
+            {/* Save this address */}
             <div className="mt-2 flex items-center">
               <input
                 type="checkbox"
