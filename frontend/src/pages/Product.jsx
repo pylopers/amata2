@@ -307,7 +307,7 @@ setAvailableCapacities(Array.from(capacitySet));
         {[
           { title: 'Features', content: productData.features },
           { title: 'Benefits', content: productData.benefits },
-          { title: 'Warranty Period', content: '1 Year Manufacturer Warranty' },
+          { title: 'Warranty Period', content: productData.warranty + ' Years of Manufacturer Warranty' },
           { title: 'Return & Replacement', content: 'Return within 7 days for an exchange or full refund.' },
           { title: 'Care Instructions', content: productData.careInstructions }
         ].map((section, index) => (

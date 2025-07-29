@@ -35,7 +35,8 @@ const reviewSchema = new mongoose.Schema({
     whatsInTheBox: { type: [String], required: true },
     inStock: { type: Boolean },
     thumbnail: { type: String, required: true },
-    mainProduct: { type: Boolean, default: false }
+    mainProduct: { type: Boolean, default: false },
+    warranty:{type: number, required:false}
 });
 
 const productModel  = mongoose.models.product || mongoose.model("product",productSchema);

@@ -46,6 +46,7 @@ const Add = ({ token }) => {
   const [color, setColor] = useState('');
   const [model, setModel] = useState('');
   const [assemblyRequired, setAssemblyRequired] = useState('');
+  const [warranty, setWarranty] = useState('');
 
   useEffect(() => {
     if (!isEdit) return;
@@ -71,6 +72,7 @@ const Add = ({ token }) => {
     setColor(initial.color || '');
     setModel(initial.model || '');
     setAssemblyRequired(initial.assemblyRequired || '');
+    setWarranty(initial.warranty || '')
 
     setImage1(initial.thumbnail || false);
     const imgs = initial.image || [];
@@ -120,7 +122,7 @@ const Add = ({ token }) => {
     formData.append('seatingCapacity', seatingCapacity);
     formData.append('color', color);
     formData.append('model', model);
-    formData.append('assemblyRequired', assemblyRequired);
+    formData.append('warranty', warranty);
 
     if (isEdit) formData.append('id', id);
 
@@ -386,6 +388,16 @@ const Add = ({ token }) => {
             className="px-3 py-2 sm:w-[150px]"
             value={assemblyRequired}
             onChange={(e) => setAssemblyRequired(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <p className="mb-2">Warranty</p>
+          <input
+            type="number"
+            className="px-3 py-2 sm:w-[150px]"
+            value={warranty}
+            onChange={(e) => setWarranty(e.target.value)}
             required
           />
         </div>

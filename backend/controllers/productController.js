@@ -18,7 +18,7 @@ const addProduct = async (req, res) => {
             return res.status(400).json({ success: false, message: "No images uploaded" });
         }
 
-        const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, inStock, mainProduct } = req.body;
+        const { name, description, price, category, subCategory, bestseller, features,careInstructions,benefits, originalPrice, length, width, height, material, seatingCapacity, color, model, assemblyRequired, whatsInTheBox, warranty, inStock, mainProduct } = req.body;
         const image1 = req.files.image1 && req.files.image1[0];
         const image2 = req.files.image2 && req.files.image2[0];
         const image3 = req.files.image3 && req.files.image3[0];
@@ -125,6 +125,7 @@ const addProduct = async (req, res) => {
             model,
             assemblyRequired,
             whatsInTheBox,
+            warranty,
             date: Date.now(),
             inStock: inStock === "true" ? true : false,
             mainProduct: mainProduct === "true" ? true : false
