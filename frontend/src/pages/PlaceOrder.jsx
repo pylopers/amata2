@@ -36,26 +36,9 @@ const PlaceOrder = () => {
     phone: ''
   });
 
-  // 1. Memoize the list of Indian states once
   const indianStates = useMemo(() => State.getStatesOfCountry('IN'), []);
 
-  // 2. Hold cities in state, update only when formData.state changes
-  const [citiesForState, setCitiesForState] = useState([]);
-
-  useEffect(() => {
-    if (!formData.state) {
-      setCitiesForState([]);
-      return;
-    }
-    const stateObj = indianStates.find(s => s.name === formData.state);
-    if (stateObj) {
-      setCitiesForState(City.getCitiesOfState('IN', stateObj.isoCode));
-    } else {
-      setCitiesForState([]);
-    }
-  }, [formData.state, indianStates]);
-
-  // 3. Fetch saved addresses on mount / token change
+  
   useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
@@ -72,11 +55,15 @@ const PlaceOrder = () => {
     fetchSavedAddresses();
   }, [backendUrl, token]);
 
+
+  
   const onChangeHandler = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+  
 
+  
   const selectSavedAddress = index => {
     const addr = savedAddresses[index];
     setFormData({
@@ -86,7 +73,9 @@ const PlaceOrder = () => {
     });
     setUseSavedAddress(true);
   };
+  
 
+  
   const useNewAddress = () => {
     setUseSavedAddress(false);
     setFormData({
@@ -103,7 +92,9 @@ const PlaceOrder = () => {
     });
     setSaveAddressChecked(false);
   };
+  
 
+  
   const handleStateChange = e => {
     setFormData(prev => ({
       ...prev,
@@ -115,7 +106,9 @@ const PlaceOrder = () => {
   const handleCityChange = e => {
     setFormData(prev => ({ ...prev, city: e.target.value }));
   };
+  
 
+  
   const handlePlaceOrder = async () => {
     if (!token) return toast.error("Please login to place an order.");
 
@@ -169,7 +162,9 @@ const PlaceOrder = () => {
       setLoading(false);
     }
   };
+  
 
+  
   const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
@@ -220,9 +215,19 @@ const PlaceOrder = () => {
     };
     new window.Razorpay(options).open();
   };
+  
+
+  const citiesForState = useMemo(() => {
+    if (!formData.state) return [];
+    const stateObj = indianStates.find(s => s.name === formData.state);
+    return stateObj
+      ? City.getCitiesOfState('IN', stateObj.isoCode)
+      : [];
+  }, [formData.state, indianStates]);
+  
 
   return (
-    <form
+        <form
       onSubmit={e => e.preventDefault()}
       className="ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t"
     >
@@ -308,13 +313,22 @@ const PlaceOrder = () => {
 
             <input
               required
-              name="street"
-              onChange={onChangeHandler}
-              value={formData.street}
-              className="border rounded py-1.5 px-4 w-full"
-              type="text"
-              placeholder="Street"
+                name="street"
+                onChange={onChangeHandler}
+                value={formData.street}
+                className="border rounded py-1.5 px-4 w-full"
+                type="text"
+                placeholder="Street"
             />
+
+            {/* Country (fixed to India) */}
+            <select
+              value="India"
+              disabled
+              className="border rounded py-1.5 px-4 w-full bg-gray-100"
+            >
+              <option>India</option>
+            </select>
 
             {/* State */}
             <select
@@ -334,21 +348,22 @@ const PlaceOrder = () => {
 
             {/* City */}
             {formData.state && (
-              <select
-                required
-                name="city"
-                value={formData.city}
-                onChange={handleCityChange}
-                className="border rounded py-1.5 px-4 w-full"
-              >
-                <option value="">Select City</option>
-                {citiesForState.map(c => (
-                  <option key={c.isoCode} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            )}
+  <select
+    required
+    name="city"
+    value={formData.city}
+    onChange={handleCityChange}
+    className="border rounded py-1.5 px-4 w-full"
+  >
+    <option value="">Select City</option>
+    {citiesForState.map(c => (
+      <option key={c.isoCode} value={c.name}>
+        {c.name}
+      </option>
+    ))}
+  </select>
+)}
+
 
             <input
               required
@@ -378,7 +393,7 @@ const PlaceOrder = () => {
               />
             </div>
 
-            {/* Save Address */}
+            {/* NEW: Save this address */}
             <div className="mt-2 flex items-center">
               <input
                 type="checkbox"
