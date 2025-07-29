@@ -219,7 +219,7 @@ const PlaceOrder = () => {
   };
   
 
-  const [citiesForState, setCitiesForState] = useState([]);
+  /*const [citiesForState, setCitiesForState] = useState([]);
   useEffect(() => {
     if (!formData.state) {
       setCitiesForState([]);
@@ -232,7 +232,7 @@ const PlaceOrder = () => {
     } else {
       setCitiesForState([]);
     }
-  }, [formData.state, indianStates]);
+  }, [formData.state, indianStates]);*/
 
   
   /*const citiesForState = useMemo(() => {
@@ -364,7 +364,7 @@ const PlaceOrder = () => {
               ))}
             </select>
 
-            {/* City */}
+            {/* City 
             {formData.state && (
   <select
     required
@@ -380,7 +380,7 @@ const PlaceOrder = () => {
       </option>
     ))}
   </select>
-)}
+)}*/}
 
 
             <input
