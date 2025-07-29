@@ -220,13 +220,13 @@ const PlaceOrder = () => {
   
 
   
-  const citiesForState = useMemo(() => {
+  /*const citiesForState = useMemo(() => {
     if (!formData.state) return [];
     const stateObj = indianStates.find(s => s.name === formData.state);
     return stateObj
       ? City.getCitiesOfState('IN', stateObj.isoCode)
       : [];
-  }, [formData.state, indianStates]);
+  }, [formData.state, indianStates]);*/
   
 
   return (
@@ -349,7 +349,7 @@ const PlaceOrder = () => {
               ))}
             </select>
 
-            {/* City */}
+            {/* City 
             {formData.state && (
               <select
                 required
@@ -365,7 +365,7 @@ const PlaceOrder = () => {
                   </option>
                 ))}
               </select>
-            )}
+            )}*/}
 
             <input
               required
