@@ -36,11 +36,9 @@ const PlaceOrder = () => {
     phone: ''
   });
 
-  const indianStates = useMemo(() => {
-  return State.getStatesOfCountry("IN").map(s => ({
-    name: s.name,
-    isoCode: s.isoCode
-  }));
+const indianStates = useMemo(() => {
+  const states = State.getStatesOfCountry("IN");
+  return states.map(s => ({ name: s.name, isoCode: s.isoCode }));
 }, []);
   
   useEffect(() => {
@@ -225,10 +223,8 @@ const citiesForState = useMemo(() => {
   if (!formData.state) return [];
   const stateObj = indianStates.find(s => s.name === formData.state);
   if (!stateObj) return [];
-  return City.getCitiesOfState("IN", stateObj.isoCode).map(c => ({
-    name: c.name,
-    isoCode: c.isoCode
-  }));
+  const cities = City.getCitiesOfState("IN", stateObj.isoCode);
+  return cities.map(c => ({ name: c.name, isoCode: c.isoCode }));
 }, [formData.state, indianStates]);
   
 
