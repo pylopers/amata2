@@ -218,14 +218,6 @@ const indianStates = useMemo(() => {
     new window.Razorpay(options).open();
   };
   
-
-const citiesForState = useMemo(() => {
-  if (!formData.state) return [];
-  const stateObj = indianStates.find(s => s.name === formData.state);
-  if (!stateObj) return [];
-  const cities = City.getCitiesOfState("IN", stateObj.isoCode);
-  return cities.map(c => ({ name: c.name, isoCode: c.isoCode }));
-}, [formData.state, indianStates]);
   
 
   return (
@@ -349,22 +341,15 @@ const citiesForState = useMemo(() => {
             </select>
 
             {/* City */}
-            {formData.state && (
-  <select
-    required
-    name="city"
-    value={formData.city}
-    onChange={handleCityChange}
-    className="border rounded py-1.5 px-4 w-full"
-  >
-    <option value="">Select City</option>
-    {citiesForState.map(c => (
-      <option key={c.isoCode} value={c.name}>
-        {c.name}
-      </option>
-    ))}
-  </select>
-)}
+            <input
+  required
+  name="city"
+  onChange={onChangeHandler}
+  value={formData.city}
+  className="border rounded py-1.5 px-4 w-full"
+  type="text"
+  placeholder="City"
+/>
 
 
             <input
