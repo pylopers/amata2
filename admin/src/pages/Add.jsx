@@ -122,6 +122,7 @@ const Add = ({ token }) => {
     formData.append('seatingCapacity', seatingCapacity);
     formData.append('color', color);
     formData.append('model', model);
+    formData.append('assemblyRequired', assemblyRequired);
     formData.append('warranty', warranty);
 
     if (isEdit) formData.append('id', id);
