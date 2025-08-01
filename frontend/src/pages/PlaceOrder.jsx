@@ -6,6 +6,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Country, State, City } from 'country-state-city';
 
+
+
 const PlaceOrder = () => {
   const {
     navigate,
@@ -22,6 +24,8 @@ const PlaceOrder = () => {
   const [useSavedAddress, setUseSavedAddress] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
+  const [errors, setErrors] = useState({});
+
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -110,9 +114,53 @@ const indianStates = useMemo(() => {
   };
   
 
+  const validateAddress = () => {
+  const newErrors = {};
+
+  if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+  if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+  if (!formData.email.trim()) newErrors.email = "Email is required";
+  if (!formData.street.trim()) newErrors.street = "Street is required";
+  if (!formData.state.trim()) newErrors.state = "State is required";
+  if (!formData.city.trim()) newErrors.city = "City is required";
+  if (!formData.zipcode.trim()) newErrors.zipcode = "Zip code is required";
+  if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+
+
   
   const handlePlaceOrder = async () => {
-    if (!token) return toast.error("Please login to place an order.");
+      if (!token) {
+    localStorage.setItem("redirectAfterLogin", "/place-order");
+    return navigate("/login");
+  }
+
+    if (!useSavedAddress) {
+  if (!validateAddress()) {
+    toast.error("Please fill the address before placing the order.");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+}
+
+
+      if (!useSavedAddress) {
+    const requiredFields = [
+      "firstName", "lastName", "email", "street",
+      "city", "state", "zipcode", "phone"
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        toast.error("Please fill all address fields.");
+        return;
+      }
+    }
+  }
 
     const orderItems = Object.entries(cartItems)
       .filter(([_, qty]) => qty > 0)

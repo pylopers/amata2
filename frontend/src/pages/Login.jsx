@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { GoogleLogin } from '@react-oauth/google';
+
+
 
 const Login = () => {
   const [currentState, setCurrentState] = useState('Login');
@@ -47,11 +50,19 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    if (token) {
+useEffect(() => {
+  if (token) {
+    const redirectPath = localStorage.getItem("redirectAfterLogin");
+    if (redirectPath) {
+      localStorage.removeItem("redirectAfterLogin");
+      navigate(redirectPath);
+    } else {
       navigate('/');
     }
-  }, [token, navigate]);
+  }
+}, [token, navigate]);
+
+
 
   return (
     <form
