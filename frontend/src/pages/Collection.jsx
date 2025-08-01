@@ -123,7 +123,7 @@ const Collection = () => {
           {/* Sub-Category */}
           <div className="border p-4 rounded">
             <p className="text-sm font-semibold mb-2">TYPE</p>
-            {['Livingroom','Bedroom'].map(sub => (
+            {['Living room','Bedroom'].map(sub => (
               <label key={sub} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
@@ -132,7 +132,7 @@ const Collection = () => {
                   onChange={toggleSubCategory}
                   className="w-4 h-4"
                 />
-                {sub === 'Livingroom' ? 'Living Room' : 'Bedroom'}
+                {sub === 'Living room' ? 'Living Room' : 'Bedroom'}
               </label>
             ))}
           </div>
