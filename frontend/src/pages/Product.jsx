@@ -69,22 +69,20 @@ setAvailableCapacities(Array.from(capacitySet));
     }
   };
 
-  const handleColorChange = (color) => {
-    if (!productData?.model) return;
-    
-    // NEW: Optimized matching using model field
-    const targetColor = color.toLowerCase().trim();
-    const newProduct = allProducts.find(
-      item => item.model === productData.model && 
-              item.color?.toLowerCase().trim() === targetColor
-    );
+const handleColorChange = (color) => {
+  if (!productData?.model) return;
+  const targetColor = color.toLowerCase().trim();
+  const currentCap = productData.seatingCapacity;
 
-    if (newProduct) {
-      navigate(`/product/${newProduct._id}`);
-    } else {
-      alert("This color is currently unavailable");
-    }
-  };
+  const newProduct = allProducts.find(item =>
+    item.model === productData.model &&
+    item.seatingCapacity === currentCap &&
+    item.color?.toLowerCase().trim() === targetColor
+  );
+
+  if (newProduct) navigate(`/product/${newProduct._id}`);
+  else alert("This color is currently unavailable for that capacity");
+};
 
    const handleCapacityChange = (capacity) => {
     if (!productData?.model) return;

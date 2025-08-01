@@ -29,7 +29,7 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [category, setCategory] = useState('Sofa');
-  const [subCategory, setSubCategory] = useState('Hall');
+  const [subCategory, setSubCategory] = useState('Living room');
   const [bestseller, setBestseller] = useState(false);
   const [mainProduct, setMainProduct] = useState(false);
   const [inStock, setInStock] = useState(true);
@@ -269,8 +269,8 @@ const Add = ({ token }) => {
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="px-3 py-2">
             <option>Sofa</option>
             <option>Sofabeds</option>
-            <option>Recliner</option>
-            <option>Furniture</option>
+            <option>Ottoman</option>
+            <option>L Shaped Sofa</option>
             <option>Furnishing</option>
           </select>
         </div>
@@ -278,7 +278,6 @@ const Add = ({ token }) => {
         <div>
           <p className="mb-2">Sub Category</p>
           <select value={subCategory} onChange={(e) => setSubCategory(e.target.value)} className="px-3 py-2">
-            <option>Hall</option>
             <option>Bedroom</option>
             <option>Living room</option>
           </select>

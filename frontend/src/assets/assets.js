@@ -83,8 +83,10 @@ import pm2 from './promotion2.jpg'
 import pm3 from './promotion3.jpg'
 import pm4 from './Living Space.png'
 import pm5 from './Living Space (1).png'
+import lshape from './Lshape.jpg'
 
 export const assets = {
+    lshape,
     pm1,
     pm2,
     pm3,

@@ -106,7 +106,7 @@ const Collection = () => {
           {/* Category */}
           <div className="border p-4 rounded">
             <p className="text-sm font-semibold mb-2">CATEGORIES</p>
-            {['Sofa','Sofabeds','Recliner','Furniture','Furnishing'].map(cat => (
+            {['Sofa','Sofabeds','L Shaped sofa','Ottoman'].map(cat => ( 
               <label key={cat} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
