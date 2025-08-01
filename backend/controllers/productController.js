@@ -278,10 +278,7 @@ const updateProduct = async (req, res) => {
     existing.bestseller   = bestseller ?? existing.bestseller;
 
     // **Directly replace** the images array
-    if (Array.isArray(imageUrls) && imageUrls.length) {
-      existing.thumbnail = imageUrls[0];
-      existing.image     = imageUrls.slice(1);
-    }
+
 
     await product.save();
     return res.json({ success: true, message: "Product updated", product });
