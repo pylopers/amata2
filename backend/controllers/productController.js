@@ -265,9 +265,13 @@ const updateProduct = async (req, res) => {
       return existing.image[idx] || null;
     });
 
-    const merged = (await Promise.all(slotPromises)).filter(u => u);
-    existing.thumbnail = merged[0] || existing.thumbnail;
-    existing.image     = merged.slice(1);
+    const merged = await Promise.all(slotPromises);
+    if (merged[0]) {
+  existing.thumbnail = merged[0];
+}
+
+// Remove the first slot (thumbnail) and keep rest as image array
+existing.image = merged.slice(1).map((url, i) => url || existing.image[i] || null).filter(Boolean);
     
     // Update fields
     existing.category     = category ?? existing.category;
