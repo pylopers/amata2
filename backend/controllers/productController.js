@@ -280,8 +280,8 @@ const updateProduct = async (req, res) => {
     // **Directly replace** the images array
 
 
-    await product.save();
-    return res.json({ success: true, message: "Product updated", product });
+    await existing.save();
+    return res.json({ success: true, message: "Product updated", product: existing });
   } catch (err) {
     console.error("Error in updateProduct:", err);
     return res.status(500).json({ success: false, message: "Server error" });
