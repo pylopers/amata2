@@ -245,15 +245,30 @@ const getProductReviews = async (req, res) => {
 // server/controllers/productController.js
 const updateProduct = async (req, res) => {
   try {
-    const {
-      id, name, category, price,
-      mainProduct, inStock, bestseller,
-      image: imageUrls
-    } = req.body;
+    const { id, name, category, price, mainProduct, inStock, bestseller } = req.body;
+    const existing = await productModel.findById(id);
+    if (!existing) return res.status(404).json({ success: false, message: "Not found" });
 
-    const product = await productModel.findById(id);
-    if (!product) return res.status(404).json({ success: false, message: "Not found" });
+    // upload any new images (slotNames as before)
+    const slotNames = [
+      'image1','image2','image3','image4','image5',
+      'image6','image7','image8','image9','image10'
+    ];
 
+    const slotPromises = slotNames.map((slot, idx) => {
+      const files = req.files?.[slot];
+      if (files && files[0]) {
+        return cloudinary.uploader.upload(files[0].tempFilePath || files[0].path)
+                         .then(r => r.secure_url);
+      }
+      // no new file here → reuse existing URL (or null)
+      return existing.image[idx] || null;
+    });
+
+    const merged = (await Promise.all(slotPromises)).filter(u => u);
+    existing.thumbnail = merged[0] || existing.thumbnail;
+    existing.image     = merged.slice(1);
+    
     // Update fields
     product.name         = name ?? product.name;
     product.category     = category ?? product.category;
