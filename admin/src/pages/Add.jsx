@@ -271,7 +271,6 @@ const Add = ({ token }) => {
             <option>Sofabeds</option>
             <option>Ottoman</option>
             <option>L Shaped Sofa</option>
-            <option>Furnishing</option>
           </select>
         </div>
 
