@@ -285,9 +285,6 @@ const updateProduct = async (req, res) => {
       );
       existing.image = existing.image.concat(newUrls);
     }
-
-// Remove the first slot (thumbnail) and keep rest as image array
-existing.image = merged.slice(1).map((url, i) => url || existing.image[i] || null).filter(Boolean);
     
     // Update fields
     existing.category     = category ?? existing.category;
