@@ -9,7 +9,7 @@ const BestSeller = () => {
 
     useEffect(() => {
         const bestProduct = products.filter((item) => item.bestseller);
-        setBestSeller(bestProduct.slice(0, 5));
+        setBestSeller(bestProduct.slice(0, 10));
     }, [products]);
 
     return (
@@ -22,28 +22,28 @@ const BestSeller = () => {
             </div>
 
             {/* Scrollable on Mobile, Grid on Larger Screens */}
-            <div className="md:grid md:grid-cols-4 lg:grid-cols-5 gap-4 flex space-x-4 overflow-x-auto scrollbar-hide px-4">
-                {bestSeller.map((item, index) => (
-                    <div 
-                    key={index} 
-                    className="w-[90vw] h-auto min-h-[400px] max-w-[250px] max-h-[450px] md:w-full md:h-auto flex-shrink-0"
-                >
-                        <ProductItem 
-                            id={item._id} 
-                            name={item.name} 
-                            thumbnail={item.thumbnail} 
-                            image={item.image} 
-                            price={item.price} 
-                            originalPrice={item.originalPrice}
-                            averageRating={item.averageRating}
-                            features={item.features} 
-                        />
-                        
-                    </div>
-                    
-                ))}
-                
-            </div>
+            <div className="overflow-x-auto scrollbar-hide px-4">
+  <div className="flex gap-4 w-max">
+    {bestSeller.map((item, index) => (
+      <div
+        key={index}
+        className="w-[80vw] min-w-[250px] max-w-[250px] h-auto min-h-[400px] max-h-[450px] flex-shrink-0"
+      >
+        <ProductItem
+          id={item._id}
+          name={item.name}
+          thumbnail={item.thumbnail}
+          image={item.image}
+          price={item.price}
+          originalPrice={item.originalPrice}
+          averageRating={item.averageRating}
+          features={item.features}
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
         </div>
     );
 };
