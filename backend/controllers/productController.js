@@ -270,17 +270,17 @@ const updateProduct = async (req, res) => {
     existing.image     = merged.slice(1);
     
     // Update fields
-    product.name         = name ?? product.name;
-    product.category     = category ?? product.category;
-    product.price        = price ?? product.price;
-    product.mainProduct  = mainProduct ?? product.mainProduct;
-    product.inStock      = inStock ?? product.inStock;
-    product.bestseller   = bestseller ?? product.bestseller;
+    existing.category     = category ?? existing.category;
+    existing.price        = price ?? existing.price;
+    existing.name         = name ?? existing.name;
+    existing.mainProduct  = mainProduct ?? existing.mainProduct;
+    existing.inStock      = inStock ?? existing.inStock;
+    existing.bestseller   = bestseller ?? existing.bestseller;
 
     // **Directly replace** the images array
     if (Array.isArray(imageUrls) && imageUrls.length) {
-      product.thumbnail = imageUrls[0];
-      product.image     = imageUrls.slice(1);
+      existing.thumbnail = imageUrls[0];
+      existing.image     = imageUrls.slice(1);
     }
 
     await product.save();
