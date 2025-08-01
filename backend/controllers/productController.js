@@ -255,20 +255,36 @@ const updateProduct = async (req, res) => {
       'image6','image7','image8','image9','image10'
     ];
 
-    const slotPromises = slotNames.map((slot, idx) => {
+    for (let idx = 0; idx < slotNames.length; idx++) {
+      const slot = slotNames[idx];
       const files = req.files?.[slot];
       if (files && files[0]) {
-        return cloudinary.uploader.upload(files[0].tempFilePath || files[0].path)
-                         .then(r => r.secure_url);
-      }
-      // no new file here → reuse existing URL (or null)
-      return existing.image[idx] || null;
-    });
+        const url = (await cloudinary.uploader.upload(
+          files[0].tempFilePath || files[0].path
+        )).secure_url;
 
-    const merged = await Promise.all(slotPromises);
-    if (merged[0]) {
-  existing.thumbnail = merged[0];
-}
+        if (idx === 0) {
+          // slot 0 is thumbnail
+          existing.thumbnail = url;
+        } else {
+          // for images[ idx-1 ]
+          existing.image[idx - 1] = url;
+        }
+      }
+    }
+
+    // 2) ----- HANDLE APPENDS -----
+    const appends = req.files?.images ?? [];
+    if (appends.length) {
+      const newUrls = await Promise.all(
+        appends.map(f =>
+          cloudinary.uploader
+            .upload(f.tempFilePath || f.path)
+            .then(r => r.secure_url)
+        )
+      );
+      existing.image = existing.image.concat(newUrls);
+    }
 
 // Remove the first slot (thumbnail) and keep rest as image array
 existing.image = merged.slice(1).map((url, i) => url || existing.image[i] || null).filter(Boolean);
