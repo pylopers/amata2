@@ -242,45 +242,40 @@ const getProductReviews = async (req, res) => {
 
 };
 
+// server/controllers/productController.js
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, category, price, mainProduct, inStock, bestseller } = req.body;
-    const existing = await productModel.findById(id);
-    if (!existing) return res.status(404).json({ success: false, message: "Not found" });
+    const {
+      id, name, category, price,
+      mainProduct, inStock, bestseller,
+      image: imageUrls
+    } = req.body;
 
-    // controllers/productController.js (inside updateProduct)
-const slotNames = [
-  'image1','image2','image3','image4','image5',
-  'image6','image7','image8','image9','image10'
-];
+    const product = await productModel.findById(id);
+    if (!product) return res.status(404).json({ success: false, message: "Not found" });
 
-// 1) Build an array of Promises for each slot
-const slotPromises = slotNames.map(slot => {
-  const files = req.files[slot];
-  if (files && files[0]) {
-    // user picked a new file for this slot → upload that
-    return cloudinary.uploader
-      .upload(files[0].path)
-      .then(r => r.secure_url);
-  }
-  // else: keep the old URL at this index (if it exists)
-  const idx = slotNames.indexOf(slot);
-  return existing.image[idx] || null;
-});
+    // Update fields
+    product.name         = name ?? product.name;
+    product.category     = category ?? product.category;
+    product.price        = price ?? product.price;
+    product.mainProduct  = mainProduct ?? product.mainProduct;
+    product.inStock      = inStock ?? product.inStock;
+    product.bestseller   = bestseller ?? product.bestseller;
 
-// 2) Resolve them all and filter out nulls
-const merged = (await Promise.all(slotPromises)).filter(u => u);
+    // **Directly replace** the images array
+    if (Array.isArray(imageUrls) && imageUrls.length) {
+      product.thumbnail = imageUrls[0];
+      product.image     = imageUrls.slice(1);
+    }
 
-// 3) Save them back
-existing.thumbnail = merged[0] || existing.thumbnail;
-existing.image     = merged.slice(1);
-await existing.save();
-    return res.json({ success: true, message: "Product updated", product: existing });
+    await product.save();
+    return res.json({ success: true, message: "Product updated", product });
   } catch (err) {
-    console.error(err);
+    console.error("Error in updateProduct:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 
