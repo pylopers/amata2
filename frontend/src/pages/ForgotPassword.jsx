@@ -2,8 +2,10 @@ import React, { useState, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
+    const navigate = useNavigate();
   const { backendUrl } = useContext(ShopContext);
   const [step, setStep] = useState(1); // 1: email, 2: OTP, 3: new password
   const [email, setEmail] = useState("");
@@ -51,7 +53,7 @@ const ForgotPassword = () => {
       });
       if (res.data.success) {
         toast.success("Password reset successfully");
-        setStep(1);
+        navigate('/login')
       } else {
         toast.error(res.data.message);
       }
