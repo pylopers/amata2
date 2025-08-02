@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 import userModel from "../models/userModel.js";
 import passport from "../middleware/passport.js";
 import { OAuth2Client } from "google-auth-library";
+import crypto from 'crypto';
+import sendMail from '../utils/sendMail.js';
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
@@ -41,6 +43,74 @@ const loginUser = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+
+
+const sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await userModel.findOne({ email });
+    if (!user)
+      return res.status(404).json({ success: false, message: 'User not found' });
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    user.otp = { code: otp, expiresAt };
+    await user.save();
+
+    await sendMail(email, 'Your OTP Code', `Your OTP is ${otp}. It will expire in 10 minutes.`);
+
+    res.json({ success: true, message: 'OTP sent to your email' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Failed to send OTP' });
+  }
+};
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await userModel.findOne({ email });
+    if (
+      !user ||
+      !user.otp ||
+      user.otp.code !== otp ||
+      user.otp.expiresAt < new Date()
+    ) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    res.json({ success: true, message: 'OTP verified' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'OTP verification failed' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    const user = await userModel.findOne({ email });
+    if (!user)
+      return res.status(404).json({ success: false, message: 'User not found' });
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.otp = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Password reset failed' });
+  }
+};
+
 
 const registerUser = async (req, res) => {
   try {
@@ -132,7 +202,7 @@ const adminLogin = async (req, res) => {
 }
 
 // in controllers/userController.js
-export const googleFrontEndLogin = async (req, res) => {
+const googleFrontEndLogin = async (req, res) => {
   try {
     console.log("googleFrontEndLogin body:", req.body);
     const { credential } = req.body;
@@ -178,4 +248,4 @@ export const googleFrontEndLogin = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, saveAddress, getSavedAddresses }
+export { loginUser, registerUser, adminLogin, saveAddress, getSavedAddresses,googleFrontEndLogin , resetPassword, sendOtp, verifyOtp }

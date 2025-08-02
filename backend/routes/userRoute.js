@@ -16,5 +16,8 @@ userRouter.get(
   passport.authenticate('google', { session: false, failureRedirect: '/login' })
 );
 userRouter.post("/google", googleFrontEndLogin);
+userRouter.post('/forgot-password', sendOtp);
+userRouter.post('/verify-otp', verifyOtp);
+userRouter.post('/reset-password', resetPassword);
 
 export default userRouter;

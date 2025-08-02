@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema({
   savedAddresses: {
     type: [Object],
     default: []
+  },
+
+  otp: {
+    code: String,
+    expiresAt: Date
   }
 }, {
   minimize: false,
