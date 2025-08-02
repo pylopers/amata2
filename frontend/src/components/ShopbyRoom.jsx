@@ -7,7 +7,7 @@ const ShopByRoom = () => {
   const navigate = useNavigate(); // 🔥 Hook for navigation
 
   const rooms = [
-    { id: 1, name: 'Living Room', value: 'Livingroom', image: assets.livingroom },
+    { id: 1, name: 'Living Room', value: 'Living room', image: assets.livingroom },
     { id: 2, name: 'Bedroom', value: 'Bedroom', image: assets.bedroom }
   ];
 
