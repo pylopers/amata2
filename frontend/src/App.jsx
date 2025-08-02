@@ -18,6 +18,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Verify from './pages/Verify'
 import PrivacyPolicy from './pages/PrivacyPolicy'
+import ForgotPassword from './pages/ForgotPassword'
 
 const App = () => {
   return (
@@ -44,7 +45,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/product/:productId" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
-          
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
           <Route path="/place-order" element={<PlaceOrder />} />
           <Route path="/login" element={<Login />} />
           <Route path="/orders" element={<Orders />} />

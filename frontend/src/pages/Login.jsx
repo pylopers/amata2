@@ -4,6 +4,7 @@ import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { GoogleLogin } from '@react-oauth/google';
+import { Link } from 'react-router-dom';
 
 
 
@@ -122,7 +123,9 @@ useEffect(() => {
       />
 
       <div className="w-full flex justify-between text-sm -mt-2">
-        <p className="cursor-pointer">Forgot your password?</p>
+        <Link to="/ForgotPassword" className="cursor-pointer">
+    Forgot your password?
+  </Link>
         {currentState === 'Login' ? (
           <p
             onClick={() => setCurrentState('Sign Up')}
