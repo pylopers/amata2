@@ -244,35 +244,41 @@ const handleColorChange = (color) => {
       </div>
     )}
 <div className='mt-4 flex flex-wrap gap-2'>
-      {colorOptions.map((color) => {
-        const normalizedColor = color.toLowerCase().trim();
-        const isAvailable = availableColors.includes(normalizedColor);
-        const isCurrent = productData.color?.toLowerCase().trim() === normalizedColor;
-          
-        return (
-          <div key={color} className="relative">
-            <button
-              className={`w-8 h-8 rounded-full border-2 ${
-                isCurrent 
-                  ? "border-black shadow-lg scale-110" 
-                  : isAvailable 
-                    ? "border-gray-300 hover:border-gray-500 cursor-pointer" 
-                    : "border-red-600 opacity-100 cursor-not-allowed"
-              } transition-all duration-200`}
-              style={{ backgroundColor: colorMap[color] }}
-              onClick={() => isAvailable && handleColorChange(color)}
-              disabled={!isAvailable}
-              title={isAvailable ? `Switch to ${color}` : `${color} unavailable`}
-            />
-            {!isAvailable && (
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 w-[97%] h-[2px] bg-red-600 rotate-[-45deg] origin-center translate-x-[-47%] translate-y-[-100%] rounded"></div>
-              </div>
-            )}
+  {colorOptions.map((color) => {
+    const normalizedColor = color.toLowerCase().trim();
+    const isAvailable = allProducts.some(item =>
+      item.model === productData.model &&
+      item.seatingCapacity === productData.seatingCapacity &&
+      item.color?.toLowerCase().trim() === normalizedColor
+    );
+    const isCurrent = productData.color?.toLowerCase().trim() === normalizedColor;
+
+    return (
+      <div key={color} className="relative">
+        <button
+          className={`w-8 h-8 rounded-full border-2 ${
+            isCurrent 
+              ? "border-black shadow-lg scale-110" 
+              : isAvailable 
+                ? "border-gray-300 hover:border-gray-500 cursor-pointer" 
+                : "border-red-600 opacity-100 cursor-not-allowed"
+          } transition-all duration-200`}
+          style={{ backgroundColor: colorMap[color] }}
+          onClick={() => isAvailable && handleColorChange(color)}
+          disabled={!isAvailable}
+          title={isAvailable ? `Switch to ${color}` : `${color} unavailable`}
+        />
+        {!isAvailable && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 w-[97%] h-[2px] bg-red-600 
+                            rotate-[-45deg] origin-center translate-x-[-47%] 
+                            translate-y-[-100%] rounded"></div>
           </div>
-        );
-      })}
-    </div>
+        )}
+      </div>
+    );
+  })}
+</div>
           <p className='mt-5 text-3xl font-medium'>{currency}{productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
           {productData.inStock ? (
