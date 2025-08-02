@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser,registerUser,adminLogin, saveAddress, getSavedAddresses } from '../controllers/userController.js';
+import { loginUser,registerUser,adminLogin, saveAddress, getSavedAddresses,  resetPassword, sendOtp, verifyOtp } from '../controllers/userController.js';
 import authUser from '../middleware/auth.js';
 import passport from '../middleware/passport.js';
 import { googleFrontEndLogin} from "../controllers/userController.js";
