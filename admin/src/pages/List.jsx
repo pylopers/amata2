@@ -90,6 +90,9 @@ const List = ({ token }) => {
         bestseller: editData.bestseller,
         mainProduct: editData.mainProduct,
         image: imgs,
+        color:editData.color,
+        warranty:editData.warranty,
+        model:editData.model
       };
       const res = await axios.post(
         `${backendUrl}/api/product/update`,
