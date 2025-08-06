@@ -11,10 +11,17 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import './swiperStyles.css'
+import Lightbox from "yet-another-react-lightbox";
+import Zoom      from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/styles.css";
+
 
 
 const Product = () => {
   const [availableColors, setAvailableColors] = useState([]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   const navigate = useNavigate();
   const { productId } = useParams();
   const { backendUrl, products, currency ,addToCart, token, allProducts } = useContext(ShopContext);
@@ -193,7 +200,8 @@ const handleColorChange = (color) => {
       >
         {productData.image.map((item, index) => (
           <SwiperSlide key={index}>
-            <img src={item} alt={`Product ${index}`} className="w-full h-auto" />
+            <img src={item} onClick={()=>{setLightboxIndex(index);
+            setLightboxOpen(true);}} alt={`Product ${index}`} className="w-full h-auto" />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -447,14 +455,18 @@ const handleColorChange = (color) => {
     Submit Review
   </button>
 </div>
-      </div>
+</div>
+{lightboxOpen && (
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        slides={productData.image.map((img) => ({ src: img }))}
+        index={lightboxIndex}
+        plugins={[Zoom]}
+      />
+    )}
+</div>
 
-
-      {/* --------- display related products ---------- */}
-
-      
-
-    </div>
   ) : <div className=' opacity-0'></div>
 }
 

@@ -24,7 +24,8 @@
     "react-slick": "^0.30.3",
     "react-toastify": "^10.0.5",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.2.4"
+    "swiper": "^11.2.4",
+    "yet-another-react-lightbox": "^3.25.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
