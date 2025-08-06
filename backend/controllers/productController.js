@@ -245,7 +245,7 @@ const getProductReviews = async (req, res) => {
 // server/controllers/productController.js
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, category, price, mainProduct, inStock, bestseller, model, color, warranty, seatingCapacity } = req.body;
+    const { id, name,description, category, price, mainProduct, inStock, bestseller, model, color, warranty, seatingCapacity } = req.body;
     const existing = await productModel.findById(id);
     if (!existing) return res.status(404).json({ success: false, message: "Not found" });
 
@@ -287,16 +287,17 @@ const updateProduct = async (req, res) => {
     }
     
     // Update fields
+    existing.description  = description ?? existing.description;
     existing.category     = category ?? existing.category;
     existing.price        = price ?? existing.price;
     existing.name         = name ?? existing.name;
     existing.mainProduct  = mainProduct ?? existing.mainProduct;
     existing.inStock      = inStock ?? existing.inStock;
     existing.bestseller   = bestseller ?? existing.bestseller;
-    existing.color        = color ?? existing.color,
-    existing.warranty     = warranty ?? existing.warranty,
-    existing.model        = model ?? existing.model,
-    existing.seatingCapacity = seatingCapacity ?? existing.seatingCapacity
+    existing.color        = color ?? existing.color;
+    existing.warranty     = warranty ?? existing.warranty;
+    existing.model        = model ?? existing.model;
+    existing.seatingCapacity = seatingCapacity ?? existing.seatingCapacity;
 
     // **Directly replace** the images array
 
