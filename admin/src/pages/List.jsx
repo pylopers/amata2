@@ -92,7 +92,8 @@ const List = ({ token }) => {
         image: imgs,
         color:editData.color,
         warranty:editData.warranty,
-        model:editData.model
+        model:editData.model,
+        seatingCapacity:editData.seatingCapacity
       };
       const res = await axios.post(
         `${backendUrl}/api/product/update`,
