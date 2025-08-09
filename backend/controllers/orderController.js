@@ -94,23 +94,26 @@ const userOrders = async (req,res) => {
 // update order status from Admin Panel
 const updateStatus = async (req, res) => {
   try {
-    const { orderId, status, trackingUrl } = req.body
-
-    // Build an update object
-    const updateData = { status }
-
-    // Only set trackingUrl if status is "Shipped" and trackingUrl is provided
+    const { orderId, status, trackingUrl } = req.body;
+    const updateData = { status };
     if (status === "Shipped" && typeof trackingUrl === "string" && trackingUrl.trim() !== "") {
-      updateData.trackingUrl = trackingUrl.trim()
+      updateData.trackingUrl = trackingUrl.trim();
     }
 
-    await orderModel.findByIdAndUpdate(orderId, updateData)
-    res.json({ success: true, message: "Status Updated" })
+    await orderModel.findByIdAndUpdate(orderId, updateData);
+    const updatedOrder = await orderModel.findById(orderId);
+
+    // send status‐update SMS
+    sendOrderSMS(updatedOrder.address.phone, updatedOrder)
+      .catch(err => console.error("SMS error:", err));
+
+    res.json({ success: true, message: "Status Updated" });
   } catch (error) {
-    console.log(error)
-    res.json({ success: false, message: error.message })
+    console.error(error);
+    res.json({ success: false, message: error.message });
   }
-}
+};
+
 
 const deletePendingOrder = async (req, res) => {
   try {
@@ -397,4 +400,131 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-export {verifyRazorpay, verifyStripe ,placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, getOrderById, deletePendingOrder, _applyCouponServerSide}
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.body.userId;
+
+    const order = await orderModel.findById(orderId);
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    if (order.userId.toString() !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const forbidden = ['Shipped', 'Delivered', 'Cancelled'];
+    if (forbidden.includes(order.status)) {
+      return res.status(400).json({ success: false, message: 'Order cannot be cancelled' });
+    }
+
+    if (order.paymentMethod === 'Razorpay' && order.payment === true && order.razorpayPaymentId && !order.refunded) {
+      await razorpayInstance.payments.refund(order.razorpayPaymentId, { amount: order.amount * 100 });
+      order.refunded = true;
+      order.refundDate = new Date();
+    }
+
+    order.status = 'Cancelled';
+    await order.save();
+
+    // send cancellation SMS
+    sendOrderSMS(order.address.phone, order)
+      .catch(err => console.error("SMS error:", err));
+
+    return res.json({ success: true, message: 'Order cancelled and refund initiated' });
+  } catch (error) {
+    console.error('cancelOrder error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const adminCancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const force = req.query.force === "true";
+
+    if (!orderId) return res.status(400).json({ success: false, message: "orderId required" });
+
+    const order = await orderModel.findById(orderId);
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+
+    // If already cancelled -> ok
+    if (order.status === "Cancelled") {
+      return res.json({ success: true, message: "Order already cancelled" });
+    }
+
+    // If not force and status is shipped/delivered -> block
+    if (!force && ["Shipped", "Delivered"].includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot cancel an order that is already shipped/delivered (use ?force=true to override)"
+      });
+    }
+
+    // Attempt refund if payment captured and not refunded already
+    let refundResult = null;
+    if (order.payment === true && !order.refunded) {
+      try {
+        if (order.paymentMethod === "Razorpay" && order.razorpayPaymentId) {
+          const amountPaise = Math.round((order.amount || 0) * 100);
+          refundResult = await razorpayInstance.payments.refund(order.razorpayPaymentId, { amount: amountPaise });
+        } else if (order.paymentMethod === "Stripe" && order.stripePaymentIntentId) {
+          refundResult = await stripeClient.refunds.create({ payment_intent: order.stripePaymentIntentId });
+        } else {
+          // unsupported gateway or missing ids: skip automatic refund
+          refundResult = { message: "No automatic refund performed: unsupported gateway or missing payment id" };
+        }
+
+        // mark refunded in DB if refundResult looks OK
+        order.refunded = true;
+        order.refundInfo = { gateway: order.paymentMethod, raw: refundResult, refundedAt: new Date() };
+      } catch (refundErr) {
+        console.error("Refund error:", refundErr);
+        // decide behavior: fail -> return error (safer), or continue but record refund failure.
+        return res.status(500).json({ success: false, message: "Refund failed: " + (refundErr.message || refundErr) });
+      }
+    }
+
+    // Update status
+    order.status = "Cancelled";
+    order.cancelledAt = new Date();
+    await order.save();
+
+    // Optional: restock items (if you have inventory counters) — implement as needed
+
+    // Optionally clear cart of the user (usually not needed for cancel)
+    try {
+      if (order.userId) {
+        await userModel.findByIdAndUpdate(order.userId, { cartData: {} });
+      }
+    } catch (e) {
+      console.warn("Clearing cart failed", e);
+    }
+
+    // Notify user (non-blocking)
+    try {
+      const updatedOrder = order; // saved
+      if (updatedOrder.address?.email) sendOrderEmail(updatedOrder.address.email, updatedOrder).catch(e => console.error("Email error:", e));
+      if (updatedOrder.address?.phone) sendOrderSMS(updatedOrder.address.phone, updatedOrder).catch(e => console.error("SMS error:", e));
+    } catch (notifyErr) {
+      console.warn("Notification error:", notifyErr);
+    }
+
+    return res.json({ success: true, message: "Order cancelled", refund: refundResult || null });
+  } catch (err) {
+    console.error("adminCancelOrder error:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export {verifyRazorpay,
+   verifyStripe 
+   ,placeOrder, 
+   placeOrderStripe, 
+   placeOrderRazorpay, 
+   allOrders, 
+   userOrders,
+    updateStatus, 
+    getOrderById, 
+    deletePendingOrder, 
+    _applyCouponServerSide
+  , cancelOrder, adminCancelOrder}
