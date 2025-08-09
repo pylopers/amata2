@@ -257,108 +257,144 @@ const placeOrderStripe = async (req,res) => {
 
 // --- Razorpay ---
 // --- Razorpay: create order (no DB write yet) ---
+// Replace your existing placeOrderRazorpay and verifyRazorpay with these:
+
+// --- placeOrderRazorpay (creates DB order first, applies coupon server-side, then creates Razorpay order) ---
 const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address, couponCode } = req.body;
 
-    // server-side coupon check / final amount calculation
-    const { amountAfter, discountAmount, coupon, items: finalItems } =
-      await _applyCouponServerSide(couponCode, items, amount);
+    // 1) Apply coupon server-side (this may throw if coupon invalid)
+    let amountAfter = amount;
+    let discountAmount = 0;
+    let coupon = null;
+    let finalItems = items;
 
-    // create a receipt string (no DB order yet)
-    const receipt = `rcpt_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-
-    const options = {
-      amount: Math.round(amountAfter * 100),     // paise
-      currency: currency.toUpperCase(),
-      receipt
-    };
-
-    // create razorpay order
-    const razorpayOrder = await razorpayInstance.orders.create(options);
-
-    // Return razorpay order object and the necessary server info (but DO NOT create DB order)
-    return res.json({
-      success: true,
-      order: razorpayOrder,      // contains id to be used on client: order.id
-      receipt,
-      amountAfter,
-      // optionally return discount & freebie preview for client
-      preview: {
-        discountAmount,
-        coupon: coupon ? { code: coupon.code, type: coupon.type } : null
-      }
-    });
-  } catch (error) {
-    console.log("placeOrderRazorpay error:", error);
-    return res.json({ success: false, message: error.message });
-  }
-};
-
-// --- Razorpay: verify payment and create DB order only on success ---
-const verifyRazorpay = async (req, res) => {
-  try {
-    // expect: { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderData }
-    // orderData must include items, amount (original), address, couponCode, etc.
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderData } = req.body;
-
-    if (!razorpay_payment_id || !razorpay_order_id) {
-      return res.status(400).json({ success: false, message: "Missing Razorpay payment info" });
+    try {
+      const applied = await _applyCouponServerSide(couponCode, items, amount);
+      amountAfter = applied.amountAfter;
+      discountAmount = applied.discountAmount || 0;
+      coupon = applied.coupon || null;
+      finalItems = applied.items || items;
+    } catch (couponErr) {
+      // If coupon invalid or fails, return error so client can fix (do NOT proceed to create DB order)
+      console.error("Coupon apply failed:", couponErr);
+      return res.status(400).json({ success: false, message: couponErr.message || "Coupon validation failed" });
     }
 
-    // Fetch payment details from Razorpay to confirm it's captured
-    const payment = await razorpayInstance.payments.fetch(razorpay_payment_id);
-
-    // If payment not captured, do NOT create order.
-    if (!payment || payment.status !== "captured") {
-      console.log("Payment not captured:", payment?.status);
-      return res.json({ success: false, message: "Payment not captured" });
-    }
-
-    // (Optional) verify that payment.order_id === razorpay_order_id
-    if (payment.order_id !== razorpay_order_id) {
-      console.warn("Payment/order mismatch:", payment.order_id, razorpay_order_id);
-      // Still safer to abort
-      return res.json({ success: false, message: "Payment/order mismatch" });
-    }
-
-    // Server must re-apply coupon and compute final items & amount (secure)
-    const { items, amount, address, couponCode, userId } = orderData;
-    const { amountAfter, discountAmount, coupon, items: finalItems } =
-      await _applyCouponServerSide(couponCode, items, amount);
-
-    // Create the order in DB now (payment succeeded)
-    const orderDataToSave = {
+    // 2) Create DB order upfront (payment: false)
+    const orderData = {
       userId,
       items: finalItems,
-      amount: amountAfter,
-      originalAmount: amount,
+      amount: amountAfter,            // amount to be charged (after discount)
+      originalAmount: amount,         // amount before discount
       discountAmount,
       coupon: coupon ? { code: coupon.code, couponId: coupon._id, type: coupon.type } : null,
       address,
       paymentMethod: "Razorpay",
-      payment: true,
-      date: Date.now()
+      payment: false,
+      date: Date.now(),
     };
 
-    const newOrder = new orderModel(orderDataToSave);
+    const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Clear user's cart
-    if (userId) {
-      try { await userModel.findByIdAndUpdate(userId, { cartData: {} }); } catch(e){ console.warn("cart clear failed", e); }
-    }
-
-    // Fire & forget notifications
-    sendOrderEmail(newOrder.address.email, newOrder).catch(err => console.error("Email error:", err));
+    // optional: send initial SMS notifying order received (pending payment)
     sendOrderSMS(newOrder.address.phone, newOrder).catch(err => console.error("SMS error:", err));
 
-    return res.json({ success: true, message: "Payment captured and order created", order: newOrder });
+    // 3) Create Razorpay order for the computed amountAfter
+    const options = {
+      amount: Math.round(amountAfter * 100), // paise
+      currency: currency.toUpperCase(),
+      receipt: newOrder._id.toString(),
+    };
+
+    razorpayInstance.orders.create(options, (error, order) => {
+      if (error) {
+        console.error("Razorpay order create error:", error);
+        // If razorpay creation fails, you may want to delete the DB order to avoid orphan pending orders.
+        // Optionally delete:
+        try { orderModel.findByIdAndDelete(newOrder._id).catch(e=>console.warn("cleanup failed", e)); } catch(e){}
+
+        return res.json({ success: false, message: error });
+      }
+      // return razorpay order to client to open checkout
+      return res.json({ success: true, order, newOrderId: newOrder._id, amountAfter, discountAmount, couponPreview: orderData.coupon });
+    });
+
   } catch (error) {
-    console.log("verifyRazorpay error:", error);
+    console.error("placeOrderRazorpay error:", error);
     return res.json({ success: false, message: error.message });
   }
 };
 
+
+// --- verifyRazorpay (keeps your working logic: check orderInfo.status === 'paid', fetch payments list, update DB order, notify) ---
+const verifyRazorpay = async (req, res) => {
+  try {
+    // Expect client to send at least: { razorpay_order_id, razorpay_payment_id } or the whole response object
+    const { razorpay_order_id, razorpay_payment_id } = req.body;
+
+    if (!razorpay_order_id) {
+      return res.status(400).json({ success: false, message: "razorpay_order_id required" });
+    }
+
+    // fetch razorpay order info
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+    if (!orderInfo) {
+      return res.json({ success: false, message: "Razorpay order not found" });
+    }
+
+    // If order is marked paid by Razorpay, proceed
+    if (orderInfo.status === 'paid') {
+      // mark DB order payment true and store razorpayOrderId
+      await orderModel.findByIdAndUpdate(orderInfo.receipt, {
+        payment: true,
+        razorpayOrderId: razorpay_order_id,
+      });
+
+      // clear user's cart — we need to know the user: either client sent userId or DB order has userId
+      // Prefer to read userId from DB order we just updated
+      const createdOrder = await orderModel.findById(orderInfo.receipt);
+      if (createdOrder && createdOrder.userId) {
+        try {
+          await userModel.findByIdAndUpdate(createdOrder.userId, { cartData: {} });
+        } catch (e) {
+          console.warn("Failed to clear cart:", e);
+        }
+      }
+
+      // Try to fetch payment id(s) for this razorpay order and store first payment id
+      try {
+        const paymentsList = await razorpayInstance.payments.all({ order_id: razorpay_order_id });
+        const paymentId = paymentsList?.items?.[0]?.id;
+        if (paymentId) {
+          await orderModel.findByIdAndUpdate(orderInfo.receipt, { razorpayPaymentId: paymentId });
+        }
+      } catch (e) {
+        console.warn("Failed to fetch/store payments list:", e);
+      }
+
+      // Re-fetch the order to use in notifications
+      const updatedOrder = await orderModel.findById(orderInfo.receipt);
+
+      // send notifications (non-blocking)
+      try {
+        sendOrderEmail(updatedOrder.address.email, updatedOrder).catch(err => console.error("Email error:", err));
+        sendOrderSMS(updatedOrder.address.phone, updatedOrder).catch(err => console.error("SMS error:", err));
+      } catch (e) {
+        console.warn("Notification error (non-fatal):", e);
+      }
+
+      return res.json({ success: true, message: "Payment Successful", order: updatedOrder });
+    }
+
+    // if not paid
+    return res.json({ success: false, message: "Payment not captured/paid yet" });
+  } catch (error) {
+    console.error("verifyRazorpay error:", error);
+    return res.json({ success: false, message: error.message });
+  }
+};
 
 export {verifyRazorpay, verifyStripe ,placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, getOrderById, deletePendingOrder, _applyCouponServerSide}
