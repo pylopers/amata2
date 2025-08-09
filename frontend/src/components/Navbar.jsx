@@ -163,6 +163,13 @@ const Navbar = () => {
           </NavLink>
 
           {/* (add more NavLink sections here as needed) */}
+          <NavLink to='/contact' className='flex flex-col px-6 py-4 items-left gap-1 border-b border-gray-300'>
+                    <p>CONTACT</p>
+          </NavLink>
+
+          <NavLink to='/about' className='flex flex-col px-6 py-4 items-left gap-1 border-b border-gray-300'>
+                    <p>ABOUT</p>
+                </NavLink>
         </div>
       </div>
 

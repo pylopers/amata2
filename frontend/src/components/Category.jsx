@@ -1,6 +1,6 @@
 import React from "react";
 import p_img1 from "../assets/Cream3s.jpg";
-import p_img4 from "../assets/red3.jpg";
+import p_img4 from "../assets/sofabed.jpg";
 import ottoman from '../assets/ottoman.jpg'
 import p_img7 from "../assets/ob3.jpg";
 import p_img8 from "../assets/G3.jpg";
@@ -9,7 +9,7 @@ import Title from "./Title";
 import { useNavigate } from "react-router-dom";
 
 const categories = [
-  { name: "Sofa", image: p_img1 },
+  { name: "Sofa", image: p_img7 },
   { name: "Sofabeds", image: p_img4 },
   { name: "L Shaped sofa", image: lshape },
   { name: "Ottoman", image: ottoman },
