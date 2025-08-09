@@ -6,8 +6,6 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Country, State, City } from 'country-state-city';
 
-
-
 const PlaceOrder = () => {
   const {
     navigate,
@@ -26,6 +24,10 @@ const PlaceOrder = () => {
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // ---- Coupon states ----
+  const [couponCode, setCouponCode] = useState("");
+  const [couponInfo, setCouponInfo] = useState(null); // { coupon, discountAmount, freebie }
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -40,11 +42,11 @@ const PlaceOrder = () => {
     phone: ''
   });
 
-const indianStates = useMemo(() => {
-  const states = State.getStatesOfCountry("IN");
-  return states.map(s => ({ name: s.name, isoCode: s.isoCode }));
-}, []);
-  
+  const indianStates = useMemo(() => {
+    const states = State.getStatesOfCountry("IN");
+    return states.map(s => ({ name: s.name, isoCode: s.isoCode }));
+  }, []);
+
   useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
@@ -61,15 +63,11 @@ const indianStates = useMemo(() => {
     fetchSavedAddresses();
   }, [backendUrl, token]);
 
-
-  
   const onChangeHandler = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
 
-  
   const selectSavedAddress = index => {
     const addr = savedAddresses[index];
     setFormData({
@@ -79,9 +77,7 @@ const indianStates = useMemo(() => {
     });
     setUseSavedAddress(true);
   };
-  
 
-  
   const useNewAddress = () => {
     setUseSavedAddress(false);
     setFormData({
@@ -98,9 +94,7 @@ const indianStates = useMemo(() => {
     });
     setSaveAddressChecked(false);
   };
-  
 
-  
   const handleStateChange = e => {
     setFormData(prev => ({
       ...prev,
@@ -112,55 +106,93 @@ const indianStates = useMemo(() => {
   const handleCityChange = e => {
     setFormData(prev => ({ ...prev, city: e.target.value }));
   };
-  
 
   const validateAddress = () => {
-  const newErrors = {};
+    const newErrors = {};
 
-  if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-  if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
-  if (!formData.email.trim()) newErrors.email = "Email is required";
-  if (!formData.street.trim()) newErrors.street = "Street is required";
-  if (!formData.state.trim()) newErrors.state = "State is required";
-  if (!formData.city.trim()) newErrors.city = "City is required";
-  if (!formData.zipcode.trim()) newErrors.zipcode = "Zip code is required";
-  if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.street.trim()) newErrors.street = "Street is required";
+    if (!formData.state.trim()) newErrors.state = "State is required";
+    if (!formData.city.trim()) newErrors.city = "City is required";
+    if (!formData.zipcode.trim()) newErrors.zipcode = "Zip code is required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  // ---- Coupon handlers ----
+  const applyCoupon = async () => {
+    const code = (couponCode || "").trim();
+    if (!code) return toast.error("Enter coupon code");
 
+    setApplyingCoupon(true);
+    try {
+      const totalBefore = getCartAmount() + (delivery_fee || 0);
+      const res = await axios.post(
+        `${backendUrl}/api/coupons/validate`,
+        { code, totalAmount: totalBefore },
+        { headers: { token } }
+      );
 
-  
+      if (res.data && res.data.success) {
+        // backend returns { coupon, discountAmount, freebie }
+        setCouponInfo({
+          coupon: res.data.coupon,
+          discountAmount: res.data.discountAmount || 0,
+          freebie: res.data.freebie || null
+        });
+        toast.success("Coupon validated. It will be used at checkout.");
+      } else {
+        setCouponInfo(null);
+        toast.error(res.data?.message || "Invalid coupon");
+      }
+    } catch (err) {
+      setCouponInfo(null);
+      console.error("Coupon apply error:", err);
+      const msg = err.response?.data?.message || err.message || "Coupon validation failed";
+      toast.error(msg);
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode("");
+    setCouponInfo(null);
+    toast.info("Coupon removed");
+  };
+
+  // ---- Place order ----
   const handlePlaceOrder = async () => {
-      if (!token) {
-    localStorage.setItem("redirectAfterLogin", "/place-order");
-    return navigate("/login");
-  }
+    if (!token) {
+      localStorage.setItem("redirectAfterLogin", "/place-order");
+      return navigate("/login");
+    }
 
     if (!useSavedAddress) {
-  if (!validateAddress()) {
-    toast.error("Please fill the address before placing the order.");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    return;
-  }
-}
-
-
-      if (!useSavedAddress) {
-    const requiredFields = [
-      "firstName", "lastName", "email", "street",
-      "city", "state", "zipcode", "phone"
-    ];
-
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        toast.error("Please fill all address fields.");
+      if (!validateAddress()) {
+        toast.error("Please fill the address before placing the order.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
     }
-  }
+
+    if (!useSavedAddress) {
+      const requiredFields = [
+        "firstName", "lastName", "email", "street",
+        "city", "state", "zipcode", "phone"
+      ];
+
+      for (const field of requiredFields) {
+        if (!formData[field]) {
+          toast.error("Please fill all address fields.");
+          return;
+        }
+      }
+    }
 
     const orderItems = Object.entries(cartItems)
       .filter(([_, qty]) => qty > 0)
@@ -193,18 +225,24 @@ const indianStates = useMemo(() => {
     }
 
     try {
+      // Important: send ORIGINAL total amount to backend.
+      // Server should revalidate the coupon and compute final amount server-side.
+      const originalAmount = getCartAmount() + (delivery_fee || 0);
+
       const orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee
+        amount: originalAmount,
+        couponCode: couponInfo?.coupon?.code || (couponCode ? couponCode.trim().toUpperCase() : "")
       };
+
       const { data } = await axios.post(
         `${backendUrl}/api/order/razorpay`,
         orderData,
         { headers: { token } }
       );
       if (data.success) initPay(data.order);
-      else toast.error(data.message);
+      else toast.error(data.message || "Order placing failed");
     } catch (error) {
       console.error(error);
       toast.error("Failed to place order.");
@@ -212,13 +250,11 @@ const indianStates = useMemo(() => {
       setLoading(false);
     }
   };
-  
 
-  
   const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
-      key: process.env.VITE_RAZORPAY_KEY_ID,
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: "INR",
       name: "AMATA",
@@ -265,11 +301,15 @@ const indianStates = useMemo(() => {
     };
     new window.Razorpay(options).open();
   };
-  
-  
+
+  // Display helpers
+  const cartTotal = getCartAmount();
+  const totalBefore = cartTotal + (delivery_fee || 0);
+  const discountShown = couponInfo?.discountAmount || 0;
+  const finalShown = Math.max(0, totalBefore - discountShown);
 
   return (
-        <form
+    <form
       onSubmit={e => e.preventDefault()}
       className="ml-4 pr-4 sm:ml-10 flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t"
     >
@@ -355,12 +395,12 @@ const indianStates = useMemo(() => {
 
             <input
               required
-                name="street"
-                onChange={onChangeHandler}
-                value={formData.street}
-                className="border rounded py-1.5 px-4 w-full"
-                type="text"
-                placeholder="Street"
+              name="street"
+              onChange={onChangeHandler}
+              value={formData.street}
+              className="border rounded py-1.5 px-4 w-full"
+              type="text"
+              placeholder="Street"
             />
 
             {/* Country (fixed to India) */}
@@ -390,15 +430,14 @@ const indianStates = useMemo(() => {
 
             {/* City */}
             <input
-  required
-  name="city"
-  onChange={onChangeHandler}
-  value={formData.city}
-  className="border rounded py-1.5 px-4 w-full"
-  type="text"
-  placeholder="City"
-/>
-
+              required
+              name="city"
+              onChange={onChangeHandler}
+              value={formData.city}
+              className="border rounded py-1.5 px-4 w-full"
+              type="text"
+              placeholder="City"
+            />
 
             <input
               required
@@ -447,6 +486,47 @@ const indianStates = useMemo(() => {
 
       <div className="ml-4 pr-4 mt-8 sm:mr-10">
         <CartTotal />
+
+        {/* Coupon UI */}
+        <div className="mt-4 mb-4">
+          <div className="flex gap-2 justify-end items-center">
+            <input
+              value={couponCode}
+              onChange={e => setCouponCode(e.target.value)}
+              placeholder="Coupon code"
+              className="border rounded px-3 py-2 w-40"
+              disabled={applyingCoupon || loading}
+            />
+            {!couponInfo ? (
+              <button
+                type="button"
+                onClick={applyCoupon}
+                className="bg-gray-800 text-white px-3 py-2 rounded"
+                disabled={applyingCoupon || loading}
+              >
+                {applyingCoupon ? "Checking..." : "Apply"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={removeCoupon}
+                className="bg-red-600 text-white px-3 py-2 rounded"
+                disabled={loading}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+
+          {/* Preview */}
+          <div className="text-right mt-2 text-sm text-gray-700">
+            <div>Total: ₹{totalBefore.toFixed(2)}</div>
+            {discountShown > 0 && <div>Discount: -₹{discountShown.toFixed(2)}</div>}
+            {couponInfo?.freebie && <div>Freebie: {couponInfo.freebie.name}</div>}
+            <div className="font-semibold mt-1">Payable: ₹{finalShown.toFixed(2)}</div>
+          </div>
+        </div>
+
         <div className="w-full text-end mt-8">
           <button
             type="button"
