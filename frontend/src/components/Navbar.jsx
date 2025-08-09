@@ -151,7 +151,7 @@ const Navbar = () => {
 
           {/* Ottoman */}
           <NavLink
-            to="/collection?category=Furniture&subCategory=Ottoman&capacity=2"
+            to="/collection?category=Ottoman"
             className={({ isActive }) =>
               `flex items-center justify-between px-6 py-4 border-b cursor-pointer
                ${isActive ? 'bg-gray-100 text-black' : 'text-gray-700'}`
