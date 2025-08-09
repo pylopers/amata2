@@ -254,7 +254,7 @@ const PlaceOrder = () => {
   const initPay = order => {
     if (!window.Razorpay) return toast.error("Razorpay SDK failed to load.");
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      key: process.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: "INR",
       name: "AMATA",
